@@ -1,0 +1,8 @@
+---
+title: "ESL reading notes"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+# Chapter 2
+
+* 2.1 - 2.5 [note](c2_21_25.html)

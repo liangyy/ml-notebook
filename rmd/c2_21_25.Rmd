@@ -1,0 +1,106 @@
+---
+title: "Chapter 2: 2.1 - 2.5"
+# author: Yanyu Liang
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+$$
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+$$
+
+# About 
+Here we mostly discussed linear model and k-nearest neighbor as two extreme machine learning models.
+Depending on the data generation process, one may perform better than the other.
+
+# knn 
+
+For the knn approach, it achieves better and better training performance as k decreases. 
+And the effective number of parameters in knn is $N / k$ which corresponding to, roughly, the number of partitions that the sample space could have 
+(as we need to memorize the result for each partition).
+
+Some potential enhancements of knn are: 
+
+* Use kernel method to weight samples rather than using the 0/1 weight for nearest neighbors.
+* For high dimensional data, we may want to carefully define distance metric so that it can emphasize certain dim.
+
+# Linear model
+
+For least squares loss (most widely used one since it is easy analytically), the solution is $(X'X)^{-1}(X'y)$.
+It creates linear decision boundary for classification problem (for cutoff = 0.5, the boundary is $X ~ s.t. ~X\beta = 0$ for any $\beta$).
+
+Linear model may over-simplify things and here are some potential enhancements:
+
+* Local regression using local weights.
+* Linear model under expanded basis.
+* Add non-linear transformation, *e.g.* neural network.
+
+# Statistical decision theory
+
+First, we define loss function $L(Y, f(X))$ where $f$ is a prediction model. 
+For example, we use squared error loss: $L(Y, f(X)) = (Y - f(X))^2$.
+And then we can define expected loss of the model $f$.
+
+$$\begin{aligned}
+  \epe(f) &= \E(L(Y, f(X))) \\
+          &= \E(Y - f(X))^2 \\
+          &= \int [y - f(x)]^2 \Pr(dx, dy) 
+\end{aligned}$$
+
+And we can always use the **trick** to do the expectation is two steps:
+
+$$\begin{aligned}
+  \epe(f) &= \E_X \E_{Y | X} ([Y - f(X)]^2 | X)
+\end{aligned}$$
+
+So if we want to minimize $\epe(f)$, we can do it for each $X$ value separately.
+Consider an extreme case where $Y$ has no extra noise given $X$, then ideally, we want $f(X) = Y$ which gives $\epe(f) = 0$.
+Following this idea, we have minimizer $f$ being $f(x) = \E(Y | X = x)$ which is **the ideal model to learn**.
+
+In this view, we can think of linear model and knn as ways to learn the $\E(Y | X = x)$. 
+For knn, it learns it in completely non-parametric way.
+And for linear model, we assume that $Y = X\beta + \text{noise}$.
+
+If $k / N \rightarrow 0$, $\hat{f}(x) \rightarrow \E(Y|X = x)$ for knn $f$. But things get harder when $p$ (data dimension) is high since we need lot more neighbors to have a good estimate of $\E(Y | X = x)$.
+And for small sample size, if we know the data follow some model, we can use these information to increase the predictive power.
+To extend linear model to make it more flexible, we can do $f(X) = \sum_{j = 1}^p f_j(X_j)$ where $f_j$ could be learned in non-parametric way but only 1-d.
+
+What if other loss function? 
+For $L_1$ loss $|Y - f(X)|$, the corresponding **ideal model to learn** is $\text{median}(Y | X = x)$ (it is still point-wise but median instead of mean). 
+For classification problem, the loss can be the number of mis-classification. And it turns out that, in this case, **the ideal model to learn** is $\max_g \Pr(g | X = x)$, *i.e.* the model popular label given $X = x$.
+
+# About MSE
+
+Let's consider a special case where we have a error-free $y_0$.
+We define mean squared error (MSE) as $\mse(x_0) = \E_{\tdata}[ f(x_0) - \hat{y}_0 ]^2$. 
+And we do the typical trick
+
+$$\begin{aligned}
+  mse(x_0) &:= \E_{\tdata}[ f(x_0) - \hat{y}_0 ]^2 \\
+           &= \E_{\tdata}[ f(x_0) - \E_\tdata(\hat{y}_0) + \E_\tdata(\hat{y}_0) - \hat{y}_0 ]^2 \\
+           &= \E_{\tdata}[ f(x_0) - \E_\tdata(\hat{y}_0)]^2 + \E_{\tdata}[\E_\tdata(\hat{y}_0) - \hat{y}_0 ]^2 - \E_{\tdata}[ f(x_0) - \E_\tdata(\hat{y}_0)] \underbrace{\E_{\tdata}[\E_\tdata(\hat{y}_0) - \hat{y}_0 ]}_{0} \\
+           &= \bias_\tdata^2(\hat{y}_0) + \var_\tdata(\hat{y}_0)
+\end{aligned}$$
+
+Note that the bias and variance is taken under the training data. It captures the average behavior when we train the model using many copies of the training data.
+
+In the above, it is for error-free $y$.
+Suppose there is error in $y$ conditioning on $x$, for instance, $y = x\beta + \epsilon, \epsilon \sim N(0, \sigma^2)$.
+Then the $\epe(x_0)$ (note that here we are not taking the whole $f$ and data space but just a point $x_0$), we have 
+
+$$\begin{aligned}
+  \epe(x_0) &= \E_{y_0 | x_0} \E_\tdata[y_0 - \hat{y}_0]^2 \\
+  &= \cdots \\
+  &= \sigma^2 + \var_\tdata(\hat{y}_0) + \underbrace{\bias^2(\hat{y}_0)}_0 \\
+  &= \sigma^2 + \E_\tdata x_0 (X'X)^{-1} x_0 \sigma^2 \\
+  \E_{x_0}[\epe(x_0)] &= \cdots = \sigma^2 (p / N) + \sigma^2
+\end{aligned}$$
+
+The extra $\sigma^2$ term beside Var and Bias is from the fact that $y$ is not noise free. 
+And this $\sigma^2$ also goes into knn.
+Here the bias is zero since the model is unbiased.
+

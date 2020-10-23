@@ -1,0 +1,22 @@
+name: "ML NoteBook"
+output_dir: "../docs"
+include: [".nojekyll"]
+exclude: ["include"]
+navbar:
+  title: "Machine Learning Notebook"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "ESL reading"
+      href: esl.html
+  right:
+    - icon: fa-github
+      href: https://github.com/liangyy/ml-notebook
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cosmo
+    highlight: textmate
+    number_sections: true
+    
