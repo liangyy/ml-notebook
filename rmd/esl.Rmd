@@ -6,3 +6,4 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 # Chapter 2
 
 * 2.1 - 2.5 [note](c2_21_25.html)
+* 2.6 [note](c2_6.html)

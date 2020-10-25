@@ -1,0 +1,58 @@
+---
+title: "Chapter 2: 2.6"
+# author: Yanyu Liang
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+$$
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\rss}{\text{RSS}}
+$$
+
+# Additive error model
+
+We consider statistical model (for quantitative $Y$):
+
+$$\begin{aligned}
+  Y &= f(X) + \epsilon
+\end{aligned}$$
+and $\E(\epsilon) = 0$.
+It is considered to be **a useful approximation of the truth**. 
+Here $X$ only affect $Y$ through $f$ and $\epsilon$ is iid noise that is independent of $X$.
+And extension of this model is to allow $\var(Y | X = x) = \sigma(x)$. But still this is an oversimplification of the target model $\Pr(Y | X)$.
+
+For binary classification problem, we can have $\E(Y | X = x) = p(x)$.
+
+# Supervised learning paradigm
+
+* Training set: $\tdata = (x_i, y_i), i = 1, \cdots, N$.
+* Learning algorithm: modify $\hat{f}$ in response to $y_i - \hat{f}(x_i)$.
+
+*is it a very general rule?* *why using differences but not some other metric?*
+
+# Function approximation
+
+OK, let's recall the problem setup. Suppose data is generated via $y_i = f(x_i) + \epsilon_i$ for $x_i \in \mathbb{R}^{p}$ and $y_i \in \mathbb{R}$ (it could be a more constraint space). And we observe a set of training data $(x_i, y_i)$.
+The goal is to learn $f$.
+
+Usually we want to approximate $f$ under some parameterization. 
+Linear model is an example of it. Another example is **linear basis expansions**.
+$$
+  f_\theta(x) = \sum_{k = 1}^K h_k(x) \theta_k
+$$
+Essentially, a linear combination of some function form $h_k$. 
+For the examples of $h_k$, it could be $x_p^2, x_p x_q, \cos(x_p)$ or $1 / (1 + e^{x'\beta_k})$ (for neural net).
+
+Once we set it up like this, we want to minimize the residual sum-of-squares (RSS).
+$$\rss(\theta) = \sum_{i = 1}^N (y_i - f_\theta(x_i))^2$$ to learn for the "best" $\theta$.
+
+A more general principle, other than minimizing RSS, is **maximum likelihood estimation**. 
+For model $Y = f_\theta(X) + \epsilon, \epsilon \sim N(0, \sigma^2)$, MLE is equivalent to minimizing RSS.
+For multinomial likelihood (for multi-class classification), the MLE principle leads to objective $$L(\theta) = \sum_{i = 1}^N \log p_{g_i, \theta}(x_i)$$ (it is log-likelihood for multinomial and it is also called cross-entropy).
+
+

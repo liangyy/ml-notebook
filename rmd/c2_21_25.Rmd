@@ -28,6 +28,11 @@ Some potential enhancements of knn are:
 * Use kernel method to weight samples rather than using the 0/1 weight for nearest neighbors.
 * For high dimensional data, we may want to carefully define distance metric so that it can emphasize certain dim.
 
+**Challenge**:
+
+* In high dimensional data space, it is hard to have enough "near neighbors". And because of this, the performance may be bad.
+* If we know the underlying pattern of data, we can build models with smaller bias and variance.
+
 # Linear model
 
 For least squares loss (most widely used one since it is easy analytically), the solution is $(X'X)^{-1}(X'y)$.
