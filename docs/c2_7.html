@@ -11,7 +11,7 @@
 
 
 
-<title>Chapter 2: 2.6</title>
+<title>Chapter 2: 2.7</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -372,8 +372,8 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Chapter 2: 2.6</h1>
-<h4 class="date">24 October, 2020</h4>
+<h1 class="title toc-ignore">Chapter 2: 2.7</h1>
+<h4 class="date">25 October, 2020</h4>
 
 </div>
 
@@ -387,30 +387,16 @@ div.tocify {
 \newcommand{\var}{\text{Var}}
 \newcommand{\rss}{\text{RSS}}
 \]</span></p>
-<div id="additive-error-model" class="section level1">
-<h1><span class="header-section-number">1</span> Additive error model</h1>
-<p>We consider statistical model (for quantitative <span class="math inline">\(Y\)</span>):</p>
-<p><span class="math display">\[\begin{aligned}
-  Y &amp;= f(X) + \epsilon
-\end{aligned}\]</span> and <span class="math inline">\(\E(\epsilon) = 0\)</span>. It is considered to be <strong>a useful approximation of the truth</strong>. Here <span class="math inline">\(X\)</span> only affect <span class="math inline">\(Y\)</span> through <span class="math inline">\(f\)</span> and <span class="math inline">\(\epsilon\)</span> is iid noise that is independent of <span class="math inline">\(X\)</span>. And extension of this model is to allow <span class="math inline">\(\var(Y | X = x) = \sigma(x)\)</span>. But still this is an oversimplification of the target model <span class="math inline">\(\Pr(Y | X)\)</span>.</p>
-<p>For binary classification problem, we can have <span class="math inline">\(\E(Y | X = x) = p(x)\)</span>.</p>
-</div>
-<div id="supervised-learning-paradigm" class="section level1">
-<h1><span class="header-section-number">2</span> Supervised learning paradigm</h1>
-<ul>
-<li>Training set: <span class="math inline">\(\tdata = (x_i, y_i), i = 1, \cdots, N\)</span>.</li>
-<li>Learning algorithm: modify <span class="math inline">\(\hat{f}\)</span> in response to <span class="math inline">\(y_i - \hat{f}(x_i)\)</span>.</li>
-</ul>
-<p><em>is it a very general rule?</em> <em>why using differences but not some other metric?</em></p>
-</div>
-<div id="function-approximation" class="section level1">
-<h1><span class="header-section-number">3</span> Function approximation</h1>
-<p>OK, let’s recall the problem setup. Suppose data is generated via <span class="math inline">\(y_i = f(x_i) + \epsilon_i\)</span> for <span class="math inline">\(x_i \in \mathbb{R}^{p}\)</span> and <span class="math inline">\(y_i \in \mathbb{R}\)</span> (it could be a more constraint space). And we observe a set of training data <span class="math inline">\((x_i, y_i)\)</span>. The goal is to learn <span class="math inline">\(f\)</span>.</p>
-<p>Usually we want to approximate <span class="math inline">\(f\)</span> under some parameterization. Linear model is an example of it. Another example is <strong>linear basis expansions</strong>. <span class="math display">\[
-  f_\theta(x) = \sum_{k = 1}^K h_k(x) \theta_k
-\]</span> Essentially, a linear combination of some function form <span class="math inline">\(h_k\)</span>. For the examples of <span class="math inline">\(h_k\)</span>, it could be <span class="math inline">\(x_p^2, x_p x_q, \cos(x_p)\)</span> or <span class="math inline">\(1 / (1 + e^{x&#39;\beta_k})\)</span> (for neural net).</p>
-<p>Once we set it up like this, we want to minimize the residual sum-of-squares (RSS). <span class="math display">\[\rss(\theta) = \sum_{i = 1}^N (y_i - f_\theta(x_i))^2\]</span> to learn for the “best” <span class="math inline">\(\theta\)</span>.</p>
-<p>A more general principle, other than minimizing RSS, is <strong>maximum likelihood estimation</strong>. For model <span class="math inline">\(Y = f_\theta(X) + \epsilon, \epsilon \sim N(0, \sigma^2)\)</span>, MLE is equivalent to minimizing RSS. For multinomial likelihood (for multi-class classification), the MLE principle leads to objective <span class="math display">\[L(\theta) = \sum_{i = 1}^N \log p_{g_i, \theta}(x_i)\]</span> (it is log-likelihood for multinomial and it is also called cross-entropy).</p>
+<p><strong>Structured Regression Models</strong></p>
+<div id="difficulty-of-the-problem" class="section level1">
+<h1><span class="header-section-number">1</span> Difficulty of the problem</h1>
+<p>The learning objective is <span class="math display">\[\rss(f) = \sum_i (y_i - f(x_i))^2\]</span>. Usually, it yields infinite number of solution when we have limited number of training data.</p>
+<p>To have useful results under finite <span class="math inline">\(N\)</span> (sample size), we restrict the solutions to a smaller function set. How to set the restriction? If we encode the function via parametric representation <span class="math inline">\(f_\theta\)</span>, it may explicitly defines some restrictions. And some learning algorithm itself, defines some restrictions implicitly by following such procedure.</p>
+<p><strong>Note</strong> that such restrictions do not resolve the infinite number of solutions and actually it transfers the problem from determining the solution to determining the restrictions.</p>
+<p>In general, the constraints can be described as <strong>complexity</strong> restirctions. It usually requires the function to have some <strong>regular behaviors</strong> in the neighborhood of the input space (smooth in some way). <em>Intuitively, if the function is not smooth, we cannot hope that we could learn it well using limited number of data.</em></p>
+<p>To make this requirement more explicit, usually we require <span class="math inline">\(\hat{f}\)</span> has some simple structure locally and the structures could be: constant, linear, low-order polynomial, etc.</p>
+<p>The <strong>strength of the constraint depends on the size of the neighborhood</strong>. Considering extreme case where the neighborhood is size = 1, essentially there is no constraint anymore. And if the neighborhood is the whole data space, it imposes strong constraint to what we think about the data. And the constraint also depends on the metric (to define neighborhood). The knn assumes the function is constant within the neighborhood. For other methods like splines, neural net, and basis-function methods, the implicitly define neighborhood of local behavior (it will be discussed in Section 5.4.1 along with <strong>equivalent kernel</strong>).</p>
+<p>If a method needs to estimate a locally varying function in a small neighborhood, it will suffer a lot by the curse of dimensionality (requiring huge amount of data to make good estimation). And the way to overcome the curse of dimensionality is usually to have an implicitly or adaptively metric to measure the neighborhood. By doing so, we avoid allowing the neighborhood to be too small (at least in some directions).</p>
 </div>
 
 

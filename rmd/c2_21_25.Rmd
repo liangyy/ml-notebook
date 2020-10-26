@@ -85,7 +85,7 @@ We define mean squared error (MSE) as $\mse(x_0) = \E_{\tdata}[ f(x_0) - \hat{y}
 And we do the typical trick
 
 $$\begin{aligned}
-  mse(x_0) &:= \E_{\tdata}[ f(x_0) - \hat{y}_0 ]^2 \\
+  \mse(x_0) &:= \E_{\tdata}[ f(x_0) - \hat{y}_0 ]^2 \\
            &= \E_{\tdata}[ f(x_0) - \E_\tdata(\hat{y}_0) + \E_\tdata(\hat{y}_0) - \hat{y}_0 ]^2 \\
            &= \E_{\tdata}[ f(x_0) - \E_\tdata(\hat{y}_0)]^2 + \E_{\tdata}[\E_\tdata(\hat{y}_0) - \hat{y}_0 ]^2 - \E_{\tdata}[ f(x_0) - \E_\tdata(\hat{y}_0)] \underbrace{\E_{\tdata}[\E_\tdata(\hat{y}_0) - \hat{y}_0 ]}_{0} \\
            &= \bias_\tdata^2(\hat{y}_0) + \var_\tdata(\hat{y}_0)

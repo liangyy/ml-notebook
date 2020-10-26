@@ -1,0 +1,48 @@
+---
+title: "Chapter 2: 2.7"
+# author: Yanyu Liang
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+$$
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\rss}{\text{RSS}}
+$$
+
+**Structured Regression Models**
+
+# Difficulty of the problem
+
+The learning objective is $$\rss(f) = \sum_i (y_i - f(x_i))^2$$. 
+Usually, it yields infinite number of solution when we have limited number of training data.
+
+To have useful results under finite $N$ (sample size), we restrict the solutions to a smaller function set. 
+How to set the restriction? If we encode the function via parametric representation $f_\theta$, it may explicitly defines some restrictions. 
+And some learning algorithm itself, defines some restrictions implicitly by following such procedure.
+
+**Note** that such restrictions do not resolve the infinite number of solutions and actually it transfers the problem from determining the solution to determining the restrictions.
+
+In general, the constraints can be described as **complexity** restirctions. 
+It usually requires the function to have some **regular behaviors** in the neighborhood of the input space (smooth in some way). 
+*Intuitively, if the function is not smooth, we cannot hope that we could learn it well using limited number of data.*
+
+To make this requirement more explicit, usually we require $\hat{f}$ has some simple structure locally and the structures could be: constant, linear, low-order polynomial, etc.
+
+The **strength of the constraint depends on the size of the neighborhood**. 
+Considering extreme case where the neighborhood is size = 1, essentially there is no constraint anymore.
+And if the neighborhood is the whole data space, it imposes strong constraint to what we think about the data.
+And the constraint also depends on the metric (to define neighborhood).
+The knn assumes the function is constant within the neighborhood.
+For other methods like splines, neural net, and basis-function methods, the implicitly define neighborhood of local behavior (it will be discussed in Section 5.4.1 along with **equivalent kernel**).
+
+If a method needs to estimate a locally varying function in a small neighborhood, it will suffer a lot by the curse of dimensionality (requiring huge amount of data to make good estimation). And the way to overcome the curse of dimensionality is usually to have an implicitly or adaptively metric to measure the neighborhood. By doing so, we avoid allowing the neighborhood to be too small (at least in some directions).
+
+
+
+
+

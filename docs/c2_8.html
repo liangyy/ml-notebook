@@ -11,7 +11,7 @@
 
 
 
-<title>Chapter 2: 2.1 - 2.5</title>
+<title>Chapter 2: 2.8</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -372,7 +372,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Chapter 2: 2.1 - 2.5</h1>
+<h1 class="title toc-ignore">Chapter 2: 2.8</h1>
 <h4 class="date">26 October, 2020</h4>
 
 </div>
@@ -385,71 +385,41 @@ div.tocify {
 \newcommand{\tdata}{\mathcal{T}}
 \newcommand{\bias}{\text{Bias}}
 \newcommand{\var}{\text{Var}}
-\]</span></p>
-<div id="about" class="section level1">
-<h1><span class="header-section-number">1</span> About</h1>
-<p>Here we mostly discussed linear model and k-nearest neighbor as two extreme machine learning models. Depending on the data generation process, one may perform better than the other.</p>
+\newcommand{\rss}{\text{RSS}}
+\]</span> <strong>Class of restricted estimators</strong>: here we briefly introduce three classes of estimators. Usually there are some parameters associated with the class which controls the effective size of the local neighborhood.</p>
+<div id="roughness-penalty-and-bayesian-methods" class="section level1">
+<h1><span class="header-section-number">1</span> Roughness Penalty and Bayesian Methods</h1>
+<p>Penalized version of RSS.</p>
+<p><span class="math display">\[
+  \text{PRSS}(f; \lambda) = \rss(f) + \lambda J(f)
+\]</span> where <span class="math inline">\(J(f)\)</span> is used defined and it is large if <span class="math inline">\(f\)</span> varies rapidly over small region (not smooth).</p>
+<p><strong>One example</strong>, for 1-d input, <span class="math display">\[\text{PRSS}(f; \lambda) = \sum_i (y_i - f(x_i))^2 + \lambda \int [f&#39;&#39;(x)]^2 dx\]</span>. And the solution to these problem is the cubic smoothing spline. And when <span class="math inline">\(\lambda \rightarrow \infty\)</span>, only linear function is permitted.</p>
+<p>For additive model, we can have <span class="math inline">\(J(f) = \sum_j J(f_j)\)</span>. For projection pursuit regression, we have <span class="math inline">\(f(X) = \sum_{m = 1}^M g_m(\alpha_m&#39; X)\)</span> for adaptively chosen directions <span class="math inline">\(\alpha_m\)</span> and we can have a roughness penalty (<span class="math inline">\(J(\cdot)\)</span>) for each of <span class="math inline">\(g_m\)</span>.</p>
+<p>Usually, the penalty function indicates our prior belief of the function type and they can be cast in a Bayesian framework. Here <span class="math inline">\(J\)</span> corresponds to a log-prior and PRSS is the log-posterior. By minimizing PRSS, we are finding the posterior mode.</p>
 </div>
-<div id="knn" class="section level1">
-<h1><span class="header-section-number">2</span> knn</h1>
-<p>For the knn approach, it achieves better and better training performance as k decreases. And the effective number of parameters in knn is <span class="math inline">\(N / k\)</span> which corresponding to, roughly, the number of partitions that the sample space could have (as we need to memorize the result for each partition).</p>
-<p>Some potential enhancements of knn are:</p>
+<div id="kernel-methods-and-local-regression" class="section level1">
+<h1><span class="header-section-number">2</span> Kernel Methods and Local Regression</h1>
+<p>Here, we directly specify the local neighborhood by <strong>kernel function</strong> <span class="math inline">\(K_\lambda(x_0, x)\)</span>. It can be interpreted as the weight of <span class="math inline">\(x\)</span> around <span class="math inline">\(x_0\)</span>. <strong>For example, the Gaussian kernel</strong> is, <span class="math display">\[K_\lambda(x_0, x) = \frac{1}{\lambda} e^{-\frac{\|x - x_0\|^2}{2 \lambda}}\]</span>.</p>
+<p>The simplest form of kernel estimate is Nadaraya-Watson weighted average: <span class="math display">\[\hat{f}(x_0) = \frac{\sum_i K_\lambda(x_0, x_i) y_i}{\sum_i K_\lambda(x_0, x_i)}.\]</span></p>
+<p>More generally, we can define the local regression estimate, <span class="math inline">\(f_{\hat\theta}(x_0)\)</span> as follow: <span class="math display">\[\begin{aligned}
+  \hat\theta &amp;= \arg\min_\theta \rss(f_\theta, x_0) \\
+  &amp;= \arg\min_\theta \sum_i K_\lambda(x_0, x_i) (y_i - f_\theta(x_i))^2
+\end{aligned}\]</span> <em>Here, this RSS is rather a definition than something we can derive from the its definition. Since intuitively, RSS of <span class="math inline">\(x_0\)</span> should be <span class="math inline">\((y_0 - f(x_0))^2\)</span>.</em></p>
 <ul>
-<li>Use kernel method to weight samples rather than using the 0/1 weight for nearest neighbors.</li>
-<li>For high dimensional data, we may want to carefully define distance metric so that it can emphasize certain dim.</li>
+<li>If <span class="math inline">\(f_\theta(x)\)</span> is constant function, <span class="math inline">\(f_\hat\theta(x_0)\)</span> is the Nagaraya-Watson estimate.</li>
+<li>If <span class="math inline">\(f_\theta(x) = \theta_0 + \theta_1 x\)</span>, it is the local linear regression model.</li>
 </ul>
-<p><strong>Challenge</strong>:</p>
-<ul>
-<li>In high dimensional data space, it is hard to have enough “near neighbors”. And because of this, the performance may be bad.</li>
-<li>If we know the underlying pattern of data, we can build models with smaller bias and variance.</li>
-</ul>
+<p>The knn can be seen as a case of kernel method where the kernel function is defined as: <span class="math display">\[
+  K_k(x_0, x) = I(\|x - x_0\| \le \|x - x_{(k)}\|)
+\]</span> , where <span class="math inline">\(x_{(k)}\)</span> is the <span class="math inline">\(k\)</span>th nearest neighbor of <span class="math inline">\(x_0\)</span>.</p>
+<p>And we should note that these kernel based approach needs modification to avoid curse of dimensionality.</p>
 </div>
-<div id="linear-model" class="section level1">
-<h1><span class="header-section-number">3</span> Linear model</h1>
-<p>For least squares loss (most widely used one since it is easy analytically), the solution is <span class="math inline">\((X&#39;X)^{-1}(X&#39;y)\)</span>. It creates linear decision boundary for classification problem (for cutoff = 0.5, the boundary is <span class="math inline">\(X ~ s.t. ~X\beta = 0\)</span> for any <span class="math inline">\(\beta\)</span>).</p>
-<p>Linear model may over-simplify things and here are some potential enhancements:</p>
-<ul>
-<li>Local regression using local weights.</li>
-<li>Linear model under expanded basis.</li>
-<li>Add non-linear transformation, <em>e.g.</em> neural network.</li>
-</ul>
-</div>
-<div id="statistical-decision-theory" class="section level1">
-<h1><span class="header-section-number">4</span> Statistical decision theory</h1>
-<p>First, we define loss function <span class="math inline">\(L(Y, f(X))\)</span> where <span class="math inline">\(f\)</span> is a prediction model. For example, we use squared error loss: <span class="math inline">\(L(Y, f(X)) = (Y - f(X))^2\)</span>. And then we can define expected loss of the model <span class="math inline">\(f\)</span>.</p>
-<p><span class="math display">\[\begin{aligned}
-  \epe(f) &amp;= \E(L(Y, f(X))) \\
-          &amp;= \E(Y - f(X))^2 \\
-          &amp;= \int [y - f(x)]^2 \Pr(dx, dy) 
-\end{aligned}\]</span></p>
-<p>And we can always use the <strong>trick</strong> to do the expectation is two steps:</p>
-<p><span class="math display">\[\begin{aligned}
-  \epe(f) &amp;= \E_X \E_{Y | X} ([Y - f(X)]^2 | X)
-\end{aligned}\]</span></p>
-<p>So if we want to minimize <span class="math inline">\(\epe(f)\)</span>, we can do it for each <span class="math inline">\(X\)</span> value separately. Consider an extreme case where <span class="math inline">\(Y\)</span> has no extra noise given <span class="math inline">\(X\)</span>, then ideally, we want <span class="math inline">\(f(X) = Y\)</span> which gives <span class="math inline">\(\epe(f) = 0\)</span>. Following this idea, we have minimizer <span class="math inline">\(f\)</span> being <span class="math inline">\(f(x) = \E(Y | X = x)\)</span> which is <strong>the ideal model to learn</strong>.</p>
-<p>In this view, we can think of linear model and knn as ways to learn the <span class="math inline">\(\E(Y | X = x)\)</span>. For knn, it learns it in completely non-parametric way. And for linear model, we assume that <span class="math inline">\(Y = X\beta + \text{noise}\)</span>.</p>
-<p>If <span class="math inline">\(k / N \rightarrow 0\)</span>, <span class="math inline">\(\hat{f}(x) \rightarrow \E(Y|X = x)\)</span> for knn <span class="math inline">\(f\)</span>. But things get harder when <span class="math inline">\(p\)</span> (data dimension) is high since we need lot more neighbors to have a good estimate of <span class="math inline">\(\E(Y | X = x)\)</span>. And for small sample size, if we know the data follow some model, we can use these information to increase the predictive power. To extend linear model to make it more flexible, we can do <span class="math inline">\(f(X) = \sum_{j = 1}^p f_j(X_j)\)</span> where <span class="math inline">\(f_j\)</span> could be learned in non-parametric way but only 1-d.</p>
-<p>What if other loss function? For <span class="math inline">\(L_1\)</span> loss <span class="math inline">\(|Y - f(X)|\)</span>, the corresponding <strong>ideal model to learn</strong> is <span class="math inline">\(\text{median}(Y | X = x)\)</span> (it is still point-wise but median instead of mean). For classification problem, the loss can be the number of mis-classification. And it turns out that, in this case, <strong>the ideal model to learn</strong> is <span class="math inline">\(\max_g \Pr(g | X = x)\)</span>, <em>i.e.</em> the model popular label given <span class="math inline">\(X = x\)</span>.</p>
-</div>
-<div id="about-mse" class="section level1">
-<h1><span class="header-section-number">5</span> About MSE</h1>
-<p>Let’s consider a special case where we have a error-free <span class="math inline">\(y_0\)</span>. We define mean squared error (MSE) as <span class="math inline">\(\mse(x_0) = \E_{\tdata}[ f(x_0) - \hat{y}_0 ]^2\)</span>. And we do the typical trick</p>
-<p><span class="math display">\[\begin{aligned}
-  \mse(x_0) &amp;:= \E_{\tdata}[ f(x_0) - \hat{y}_0 ]^2 \\
-           &amp;= \E_{\tdata}[ f(x_0) - \E_\tdata(\hat{y}_0) + \E_\tdata(\hat{y}_0) - \hat{y}_0 ]^2 \\
-           &amp;= \E_{\tdata}[ f(x_0) - \E_\tdata(\hat{y}_0)]^2 + \E_{\tdata}[\E_\tdata(\hat{y}_0) - \hat{y}_0 ]^2 - \E_{\tdata}[ f(x_0) - \E_\tdata(\hat{y}_0)] \underbrace{\E_{\tdata}[\E_\tdata(\hat{y}_0) - \hat{y}_0 ]}_{0} \\
-           &amp;= \bias_\tdata^2(\hat{y}_0) + \var_\tdata(\hat{y}_0)
-\end{aligned}\]</span></p>
-<p>Note that the bias and variance is taken under the training data. It captures the average behavior when we train the model using many copies of the training data.</p>
-<p>In the above, it is for error-free <span class="math inline">\(y\)</span>. Suppose there is error in <span class="math inline">\(y\)</span> conditioning on <span class="math inline">\(x\)</span>, for instance, <span class="math inline">\(y = x\beta + \epsilon, \epsilon \sim N(0, \sigma^2)\)</span>. Then the <span class="math inline">\(\epe(x_0)\)</span> (note that here we are not taking the whole <span class="math inline">\(f\)</span> and data space but just a point <span class="math inline">\(x_0\)</span>), we have</p>
-<p><span class="math display">\[\begin{aligned}
-  \epe(x_0) &amp;= \E_{y_0 | x_0} \E_\tdata[y_0 - \hat{y}_0]^2 \\
-  &amp;= \cdots \\
-  &amp;= \sigma^2 + \var_\tdata(\hat{y}_0) + \underbrace{\bias^2(\hat{y}_0)}_0 \\
-  &amp;= \sigma^2 + \E_\tdata x_0 (X&#39;X)^{-1} x_0 \sigma^2 \\
-  \E_{x_0}[\epe(x_0)] &amp;= \cdots = \sigma^2 (p / N) + \sigma^2
-\end{aligned}\]</span></p>
-<p>The extra <span class="math inline">\(\sigma^2\)</span> term beside Var and Bias is from the fact that <span class="math inline">\(y\)</span> is not noise free. And this <span class="math inline">\(\sigma^2\)</span> also goes into knn. Here the bias is zero since the model is unbiased.</p>
+<div id="basis-functions-and-dictionary-methods" class="section level1">
+<h1><span class="header-section-number">3</span> Basis Functions and Dictionary Methods</h1>
+<p>We parameterize the model as <span class="math inline">\(f_\theta(x) = \sum_{m = 1}^M \theta_m h_m(x)\)</span>. Here, <span class="math inline">\(h_m\)</span> is some kinds of function and these <span class="math inline">\(h_m\)</span>’s are combined additively. Sometimes, <span class="math inline">\(h_m\)</span> is prescribed before the training, <em>e.g.</em> the basis for polynomials in <span class="math inline">\(x\)</span> of total degree <span class="math inline">\(M\)</span>. More specifically, the polynomial splines of degree <span class="math inline">\(K\)</span> gives piecewise polynomial of <span class="math inline">\(K\)</span> degree between knots (assuming 1-d input).</p>
+<p>Another example is <strong>Radial basis functions</strong> <span class="math inline">\(f_\theta(x) = \sum_{m = 1}^M K_{\lambda_m}(\mu_m, x)\theta_m\)</span>. And centroids <span class="math inline">\(\mu_m\)</span> and scales <span class="math inline">\(\lambda_m\)</span> need to be determined (beforehand). Ideally, we want to have some data-driven approach to determine these parameters (also the knots in spline).</p>
+<p>Inline with this, feed-forward neural net is another example <span class="math inline">\(f_\theta(x) = \sum_{m = 1}^M \beta_m \sigma(\alpha_m&#39; x + b_m)\)</span>. Still, we want to determine <span class="math inline">\(\alpha_m\)</span> and <span class="math inline">\(b_m\)</span> and it is estimated along the way.</p>
+<p>For methods choosing the basis functions adaptively, they are also called <strong>dictionary methods</strong>. In principle, we have infinite number of basis candidate and we use some of them to build the model via some search mechanism.</p>
 </div>
 
 

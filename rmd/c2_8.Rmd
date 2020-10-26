@@ -1,0 +1,79 @@
+---
+title: "Chapter 2: 2.8"
+# author: Yanyu Liang
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+$$
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\rss}{\text{RSS}}
+$$
+**Class of restricted estimators**: here we briefly introduce three classes of estimators. Usually there are some parameters associated with the class which controls the effective size of the local neighborhood. 
+
+# Roughness Penalty and Bayesian Methods
+
+Penalized version of RSS.
+
+$$
+  \text{PRSS}(f; \lambda) = \rss(f) + \lambda J(f)
+$$
+where $J(f)$ is used defined and it is large if $f$ varies rapidly over small region (not smooth).
+
+**One example**, for 1-d input, $$\text{PRSS}(f; \lambda) = \sum_i (y_i - f(x_i))^2 + \lambda \int [f''(x)]^2 dx$$.
+And the solution to these problem is the cubic smoothing spline. And when $\lambda \rightarrow \infty$, only linear function is permitted.
+
+For additive model, we can have $J(f) = \sum_j J(f_j)$. 
+For projection pursuit regression, we have $f(X) = \sum_{m = 1}^M g_m(\alpha_m' X)$ for adaptively chosen directions $\alpha_m$ and we can have a roughness penalty ($J(\cdot)$) for each of $g_m$.
+
+Usually, the penalty function indicates our prior belief of the function type and they can be cast in a Bayesian framework. 
+Here $J$ corresponds to a log-prior and PRSS is the log-posterior. 
+By minimizing PRSS, we are finding the posterior mode.
+
+# Kernel Methods and Local Regression
+
+Here, we directly specify the local neighborhood by **kernel function** $K_\lambda(x_0, x)$.
+It can be interpreted as the weight of $x$ around $x_0$.
+**For example, the Gaussian kernel** is, $$K_\lambda(x_0, x) = \frac{1}{\lambda} e^{-\frac{\|x - x_0\|^2}{2 \lambda}}$$.
+
+The simplest form of kernel estimate is Nadaraya-Watson weighted average: $$\hat{f}(x_0) = \frac{\sum_i K_\lambda(x_0, x_i) y_i}{\sum_i K_\lambda(x_0, x_i)}.$$
+
+More generally, we can define the local regression estimate, $f_{\hat\theta}(x_0)$ as follow: 
+$$\begin{aligned}
+  \hat\theta &= \arg\min_\theta \rss(f_\theta, x_0) \\
+  &= \arg\min_\theta \sum_i K_\lambda(x_0, x_i) (y_i - f_\theta(x_i))^2
+\end{aligned}$$
+*Here, this RSS is rather a definition than something we can derive from the its definition. Since intuitively, RSS of $x_0$ should be $(y_0 - f(x_0))^2$.*
+
+* If $f_\theta(x)$ is constant function, $f_\hat\theta(x_0)$ is the Nagaraya-Watson estimate.
+* If $f_\theta(x) = \theta_0 + \theta_1 x$, it is the local linear regression model.
+
+The knn can be seen as a case of kernel method where the kernel function is defined as:
+$$
+  K_k(x_0, x) = I(\|x - x_0\| \le \|x - x_{(k)}\|)
+$$
+, where $x_{(k)}$ is the $k$th nearest neighbor of $x_0$.
+
+And we should note that these kernel based approach needs modification to avoid curse of dimensionality.
+
+# Basis Functions and Dictionary Methods
+
+We parameterize the model as $f_\theta(x) = \sum_{m = 1}^M \theta_m h_m(x)$.
+Here, $h_m$ is some kinds of function and these $h_m$'s are combined additively. 
+Sometimes, $h_m$ is prescribed before the training, *e.g.* the basis for polynomials in $x$ of total degree $M$. More specifically, the polynomial splines of degree $K$ gives piecewise polynomial of $K$ degree between knots (assuming 1-d input).
+
+Another example is **Radial basis functions** $f_\theta(x) = \sum_{m = 1}^M K_{\lambda_m}(\mu_m, x)\theta_m$. And centroids $\mu_m$ and scales $\lambda_m$ need to be determined (beforehand).
+Ideally, we want to have some data-driven approach to determine these parameters (also the knots in spline).
+
+Inline with this, feed-forward neural net is another example $f_\theta(x) = \sum_{m = 1}^M \beta_m \sigma(\alpha_m' x + b_m)$. Still, we want to determine $\alpha_m$ and $b_m$ and it is estimated along the way.
+
+For methods choosing the basis functions adaptively, they are also called **dictionary methods**. In principle, we have infinite number of basis candidate and we use some of them to build the model via some search mechanism.
+
+
+
+
+

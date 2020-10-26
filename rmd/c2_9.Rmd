@@ -1,0 +1,43 @@
+---
+title: "Chapter 2: 2.9"
+# author: Yanyu Liang
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+$$
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\rss}{\text{RSS}}
+$$
+
+**Model Selection and Bias-Variance Tradeoff**
+
+All the models described in 2.8 (and many others) have a **smoothing or complexity** parameter to be decided:
+
+* multiplier of the penalty term in PRSS.
+* the width of the kernel.
+* the number of basis functions.
+
+Let's take a closer look at knn, $\hat{f}_k(x_0)$ under the true model $Y = f(X) + \epsilon, \E(\epsilon) = 0, \var(\epsilon) = \sigma^2$.
+The expected prediction error at $x_0$ (or generalization error), is
+$$\begin{aligned}
+  \epe_k(x_0) &= \E((Y - \hat{f}_k(x_0))^2 | X = x_0) \\
+  &= \sigma^2 + \bias_\tdata^2(\hat{f}_k(x_0)) + \var_\tdata(\hat{f}_k(x_0)) \\
+  &= \sigma^2 + [f(x_0) - \frac{1}{k} \sum_l f(x_{(l)})]^2 + \sigma^2 / k
+\end{aligned}$$
+*We derived this in [note](c2_21_25.html#5_about_mse).*
+The first term is **irreducible error** since we cannot avoid it even if we know $f(x_0)$. 
+The second terms measures how far away of the true mean $f(x_0)$ and the estimated one averaged over the training data. Intuitively, as $k$ increases, the squared bias increases (epecially for very non-smooth $f$).
+The third term is simply the variance of the estimate. As we have more neighbors (larger $k$), the variance is smaller. 
+So, we can see that there is tradeoff between the second and the third term.
+
+In practice, we want to minimize the test error. 
+Since test error is unobserved, we may want to use training error insteead. 
+But the bad news is that the training error is not a good estimate of test error since it will keep going down as we increase model complexity.
+For a very complex model, it will have large variance on $\hat{f}(x_0)$. 
+And for a over-simplified model, it will have large bias (refer to **underfitting**).
+

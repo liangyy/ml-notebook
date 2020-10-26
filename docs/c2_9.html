@@ -11,7 +11,7 @@
 
 
 
-<title>Chapter 2: 2.1 - 2.5</title>
+<title>Chapter 2: 2.9</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -372,7 +372,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Chapter 2: 2.1 - 2.5</h1>
+<h1 class="title toc-ignore">Chapter 2: 2.9</h1>
 <h4 class="date">26 October, 2020</h4>
 
 </div>
@@ -385,72 +385,21 @@ div.tocify {
 \newcommand{\tdata}{\mathcal{T}}
 \newcommand{\bias}{\text{Bias}}
 \newcommand{\var}{\text{Var}}
+\newcommand{\rss}{\text{RSS}}
 \]</span></p>
-<div id="about" class="section level1">
-<h1><span class="header-section-number">1</span> About</h1>
-<p>Here we mostly discussed linear model and k-nearest neighbor as two extreme machine learning models. Depending on the data generation process, one may perform better than the other.</p>
-</div>
-<div id="knn" class="section level1">
-<h1><span class="header-section-number">2</span> knn</h1>
-<p>For the knn approach, it achieves better and better training performance as k decreases. And the effective number of parameters in knn is <span class="math inline">\(N / k\)</span> which corresponding to, roughly, the number of partitions that the sample space could have (as we need to memorize the result for each partition).</p>
-<p>Some potential enhancements of knn are:</p>
+<p><strong>Model Selection and Bias-Variance Tradeoff</strong></p>
+<p>All the models described in 2.8 (and many others) have a <strong>smoothing or complexity</strong> parameter to be decided:</p>
 <ul>
-<li>Use kernel method to weight samples rather than using the 0/1 weight for nearest neighbors.</li>
-<li>For high dimensional data, we may want to carefully define distance metric so that it can emphasize certain dim.</li>
+<li>multiplier of the penalty term in PRSS.</li>
+<li>the width of the kernel.</li>
+<li>the number of basis functions.</li>
 </ul>
-<p><strong>Challenge</strong>:</p>
-<ul>
-<li>In high dimensional data space, it is hard to have enough “near neighbors”. And because of this, the performance may be bad.</li>
-<li>If we know the underlying pattern of data, we can build models with smaller bias and variance.</li>
-</ul>
-</div>
-<div id="linear-model" class="section level1">
-<h1><span class="header-section-number">3</span> Linear model</h1>
-<p>For least squares loss (most widely used one since it is easy analytically), the solution is <span class="math inline">\((X&#39;X)^{-1}(X&#39;y)\)</span>. It creates linear decision boundary for classification problem (for cutoff = 0.5, the boundary is <span class="math inline">\(X ~ s.t. ~X\beta = 0\)</span> for any <span class="math inline">\(\beta\)</span>).</p>
-<p>Linear model may over-simplify things and here are some potential enhancements:</p>
-<ul>
-<li>Local regression using local weights.</li>
-<li>Linear model under expanded basis.</li>
-<li>Add non-linear transformation, <em>e.g.</em> neural network.</li>
-</ul>
-</div>
-<div id="statistical-decision-theory" class="section level1">
-<h1><span class="header-section-number">4</span> Statistical decision theory</h1>
-<p>First, we define loss function <span class="math inline">\(L(Y, f(X))\)</span> where <span class="math inline">\(f\)</span> is a prediction model. For example, we use squared error loss: <span class="math inline">\(L(Y, f(X)) = (Y - f(X))^2\)</span>. And then we can define expected loss of the model <span class="math inline">\(f\)</span>.</p>
-<p><span class="math display">\[\begin{aligned}
-  \epe(f) &amp;= \E(L(Y, f(X))) \\
-          &amp;= \E(Y - f(X))^2 \\
-          &amp;= \int [y - f(x)]^2 \Pr(dx, dy) 
-\end{aligned}\]</span></p>
-<p>And we can always use the <strong>trick</strong> to do the expectation is two steps:</p>
-<p><span class="math display">\[\begin{aligned}
-  \epe(f) &amp;= \E_X \E_{Y | X} ([Y - f(X)]^2 | X)
-\end{aligned}\]</span></p>
-<p>So if we want to minimize <span class="math inline">\(\epe(f)\)</span>, we can do it for each <span class="math inline">\(X\)</span> value separately. Consider an extreme case where <span class="math inline">\(Y\)</span> has no extra noise given <span class="math inline">\(X\)</span>, then ideally, we want <span class="math inline">\(f(X) = Y\)</span> which gives <span class="math inline">\(\epe(f) = 0\)</span>. Following this idea, we have minimizer <span class="math inline">\(f\)</span> being <span class="math inline">\(f(x) = \E(Y | X = x)\)</span> which is <strong>the ideal model to learn</strong>.</p>
-<p>In this view, we can think of linear model and knn as ways to learn the <span class="math inline">\(\E(Y | X = x)\)</span>. For knn, it learns it in completely non-parametric way. And for linear model, we assume that <span class="math inline">\(Y = X\beta + \text{noise}\)</span>.</p>
-<p>If <span class="math inline">\(k / N \rightarrow 0\)</span>, <span class="math inline">\(\hat{f}(x) \rightarrow \E(Y|X = x)\)</span> for knn <span class="math inline">\(f\)</span>. But things get harder when <span class="math inline">\(p\)</span> (data dimension) is high since we need lot more neighbors to have a good estimate of <span class="math inline">\(\E(Y | X = x)\)</span>. And for small sample size, if we know the data follow some model, we can use these information to increase the predictive power. To extend linear model to make it more flexible, we can do <span class="math inline">\(f(X) = \sum_{j = 1}^p f_j(X_j)\)</span> where <span class="math inline">\(f_j\)</span> could be learned in non-parametric way but only 1-d.</p>
-<p>What if other loss function? For <span class="math inline">\(L_1\)</span> loss <span class="math inline">\(|Y - f(X)|\)</span>, the corresponding <strong>ideal model to learn</strong> is <span class="math inline">\(\text{median}(Y | X = x)\)</span> (it is still point-wise but median instead of mean). For classification problem, the loss can be the number of mis-classification. And it turns out that, in this case, <strong>the ideal model to learn</strong> is <span class="math inline">\(\max_g \Pr(g | X = x)\)</span>, <em>i.e.</em> the model popular label given <span class="math inline">\(X = x\)</span>.</p>
-</div>
-<div id="about-mse" class="section level1">
-<h1><span class="header-section-number">5</span> About MSE</h1>
-<p>Let’s consider a special case where we have a error-free <span class="math inline">\(y_0\)</span>. We define mean squared error (MSE) as <span class="math inline">\(\mse(x_0) = \E_{\tdata}[ f(x_0) - \hat{y}_0 ]^2\)</span>. And we do the typical trick</p>
-<p><span class="math display">\[\begin{aligned}
-  \mse(x_0) &amp;:= \E_{\tdata}[ f(x_0) - \hat{y}_0 ]^2 \\
-           &amp;= \E_{\tdata}[ f(x_0) - \E_\tdata(\hat{y}_0) + \E_\tdata(\hat{y}_0) - \hat{y}_0 ]^2 \\
-           &amp;= \E_{\tdata}[ f(x_0) - \E_\tdata(\hat{y}_0)]^2 + \E_{\tdata}[\E_\tdata(\hat{y}_0) - \hat{y}_0 ]^2 - \E_{\tdata}[ f(x_0) - \E_\tdata(\hat{y}_0)] \underbrace{\E_{\tdata}[\E_\tdata(\hat{y}_0) - \hat{y}_0 ]}_{0} \\
-           &amp;= \bias_\tdata^2(\hat{y}_0) + \var_\tdata(\hat{y}_0)
-\end{aligned}\]</span></p>
-<p>Note that the bias and variance is taken under the training data. It captures the average behavior when we train the model using many copies of the training data.</p>
-<p>In the above, it is for error-free <span class="math inline">\(y\)</span>. Suppose there is error in <span class="math inline">\(y\)</span> conditioning on <span class="math inline">\(x\)</span>, for instance, <span class="math inline">\(y = x\beta + \epsilon, \epsilon \sim N(0, \sigma^2)\)</span>. Then the <span class="math inline">\(\epe(x_0)\)</span> (note that here we are not taking the whole <span class="math inline">\(f\)</span> and data space but just a point <span class="math inline">\(x_0\)</span>), we have</p>
-<p><span class="math display">\[\begin{aligned}
-  \epe(x_0) &amp;= \E_{y_0 | x_0} \E_\tdata[y_0 - \hat{y}_0]^2 \\
-  &amp;= \cdots \\
-  &amp;= \sigma^2 + \var_\tdata(\hat{y}_0) + \underbrace{\bias^2(\hat{y}_0)}_0 \\
-  &amp;= \sigma^2 + \E_\tdata x_0 (X&#39;X)^{-1} x_0 \sigma^2 \\
-  \E_{x_0}[\epe(x_0)] &amp;= \cdots = \sigma^2 (p / N) + \sigma^2
-\end{aligned}\]</span></p>
-<p>The extra <span class="math inline">\(\sigma^2\)</span> term beside Var and Bias is from the fact that <span class="math inline">\(y\)</span> is not noise free. And this <span class="math inline">\(\sigma^2\)</span> also goes into knn. Here the bias is zero since the model is unbiased.</p>
-</div>
+<p>Let’s take a closer look at knn, <span class="math inline">\(\hat{f}_k(x_0)\)</span> under the true model <span class="math inline">\(Y = f(X) + \epsilon, \E(\epsilon) = 0, \var(\epsilon) = \sigma^2\)</span>. The expected prediction error at <span class="math inline">\(x_0\)</span> (or generalization error), is <span class="math display">\[\begin{aligned}
+  \epe_k(x_0) &amp;= \E((Y - \hat{f}_k(x_0))^2 | X = x_0) \\
+  &amp;= \sigma^2 + \bias_\tdata^2(\hat{f}_k(x_0)) + \var_\tdata(\hat{f}_k(x_0)) \\
+  &amp;= \sigma^2 + [f(x_0) - \frac{1}{k} \sum_l f(x_{(l)})]^2 + \sigma^2 / k
+\end{aligned}\]</span> <em>We derived this in <a href="c2_21_25.html#5_about_mse">note</a>.</em> The first term is <strong>irreducible error</strong> since we cannot avoid it even if we know <span class="math inline">\(f(x_0)\)</span>. The second terms measures how far away of the true mean <span class="math inline">\(f(x_0)\)</span> and the estimated one averaged over the training data. Intuitively, as <span class="math inline">\(k\)</span> increases, the squared bias increases (epecially for very non-smooth <span class="math inline">\(f\)</span>). The third term is simply the variance of the estimate. As we have more neighbors (larger <span class="math inline">\(k\)</span>), the variance is smaller. So, we can see that there is tradeoff between the second and the third term.</p>
+<p>In practice, we want to minimize the test error. Since test error is unobserved, we may want to use training error insteead. But the bad news is that the training error is not a good estimate of test error since it will keep going down as we increase model complexity. For a very complex model, it will have large variance on <span class="math inline">\(\hat{f}(x_0)\)</span>. And for a over-simplified model, it will have large bias (refer to <strong>underfitting</strong>).</p>
 
 
 

@@ -7,3 +7,9 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 
 * 2.1 - 2.5 [note](c2_21_25.html)
 * 2.6 [note](c2_6.html)
+* 2.7 [note](c2_7.html): Very insightful overview on why we want to have structured regression models.
+* 2.8 [note](c2_8.html): Overview of restricted estimators.
+* 2.9 [note](c2_9.html): Model selection and the Bias-Variance tradeoff.
+
+
+
