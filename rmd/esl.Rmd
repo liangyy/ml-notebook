@@ -11,5 +11,8 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 * 2.8 [note](c2_8.html): Overview of restricted estimators.
 * 2.9 [note](c2_9.html): Model selection and the Bias-Variance tradeoff.
 
+# Chapter 3
+
+* 3.1 - 3.2.2 [note](c3_1_.html): Introduction to least squares.
 
 

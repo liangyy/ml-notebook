@@ -1,0 +1,61 @@
+---
+title: "Chapter 3: 3.1 - 3.2.2"
+# author: Yanyu Liang
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+$$
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\rss}{\text{RSS}}
+$$
+
+# Introduction
+
+Why linear model? They are simple and interpretable. 
+In the situaion with small numbers of training, low signal-to-noise ratio or sparse data, they may outperform non-linear models. 
+Moreover, they can be expanded by applying transformation of input data or basis-function methods.
+
+Understanding linear model is essential for the understanding of the non-linear ones.
+
+# Least squares 
+
+We want to minimize the residual sum of squares
+$$\rss(\beta) = \sum_i (y_i - f(x_i))^2$$.
+with $f(x_i) = \sum_j x_{ij} \beta_j$.
+
+The solution is $\hat\beta = (X^T X)^{-1} X^T y$.
+And the predicted $y$ is $\hat{y} = X ( X^T X)^{-1} X^T y$ where we call $H = X(X^T X)^{-1} X^T$ hat matrix, which projects $y$ to the subspace spanned by the column space of $X$. Note that $H$ is a projection matrix.
+
+When $X$ does not have full column rank, $\hat{y}$ is still the same projection just that $\hat{\beta}$ is not unique anymore. Usually, we need to recode or drop the redundant columns in $X$.
+
+To draw statistical property of $\hat\beta$, we need to assume that the residual follows Gaussian.
+And with this, we have $\var(\hat\beta) = (X^T X)^{-1} \sigma^2$ and $\hat\sigma^2 = \frac{1}{N - p - 1} \sum_i (y_i - \hat{y}_i)^2$ ($\hat\sigma^2$ is unbiased).
+Also we have $\hat\beta \sim N(\beta, (X^T X)^{-1} \sigma^2)$ and $(N - p - 1) \hat\sigma^2 \sim \sigma^2 \chi^2_{N - p - 1}$. Note that $\hat\beta \perp \hat\sigma^2$.
+We can construct test for $\beta_j = 0$ where $z_j = \hat\beta_j / (\hat\sigma \sqrt{v_j})$ and $v_j$ is the jth element of the diagonal of $(X^T X)^{-1}$. For small sample size, $z_j$ follows $t_{N - p - 1}$ due to the fact that we use $\hat\sigma$ instead of $\sigma$ (if we know $\sigma$, the distribution is normal).
+
+To test a group of coefficients, we want to use $F$ statistic, $F = \frac{(\rss_0 - \rss_1) / (p_1 - p_0)}{\rss_1 / (N - p_1 - 1)}$. Here $\rss_1$ is the residual of bigger model (with $p_1 + 1$ parameters) and $\rss_0$ is from the model with $p_0 + 1$ parameters.
+If the null hypothesis is that the smaller model (model 0) is correct, the $F$ statistic follows $F_{p_1 - p_0, N - p_1 - 1}$. For large sample size, we can use $\chi^2_{p1 - p_0} / (p_1 - p_0)$ to approach the $F$ distribution.
+
+Also, we can carry out the confidence interval. For a vector $\beta$, we have $$C_\alpha = \{\beta: (\hat\beta - \beta)^T X^T X (\hat\beta - \beta) \le \hat\sigma^2 \chi_{p+1}^{2 (1 - \alpha)}\}$$ where $\chi^{2(p)}$ is the $p$ percentile of the distribution.
+
+# Gauss-Markov theorem
+
+The theorem states that the least squares estimates $\hat\beta$ have the smallest variance among all linear **unbiased** estimates (the detailed proof can be found [here](https://en.wikipedia.org/wiki/Gauss%E2%80%93Markov_theorem#Proof)).  
+Furthermore, we can decompose the MSE into two parts: $\mse(\tilde\theta) = \var(\tilde\theta) + [\E(\tilde\theta) - \theta]^2$. We can say that the least squares also give rise to the unbiased linear estimator with minimum MSE.
+Similarly, the expected prediction error is $\E(Y - \tilde{f}(x)) = \sigma^2 + \mse(\tilde{f}(x))$. So, least squares also minimizes the exprected prediction error among unbiased linear estimator.
+
+But we should note that there may exist biased estimator with smaller MSE due to the fact that they may have even smaller variance. These estimators include the ridge regression and variable subset selection.
+
+
+
+
+
+
+
+
+
