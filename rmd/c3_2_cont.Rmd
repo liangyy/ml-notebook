@@ -1,0 +1,63 @@
+---
+title: "Chapter 3: 3.2.3 - 3.2.4"
+# author: Yanyu Liang
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+$$
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\rss}{\text{RSS}}
+\newcommand{\tr}{\text{tr}}
+$$
+
+Here we discuss some important take-away's of least squares problem.
+I wish I've got the points of these when I first learned least squares. 
+But apparently, I did not and it took me quite a while to learn some of these insightful pieces.
+
+# Multiple regression from simple univariate regression
+
+Here we discuss an algorithm to obtain the regression coefficient of $x_p$ when we have multiple predictors fitting into the model jointly.
+This algorithm essentially convert the original problem to simple univariate regression.
+
+Let's begin with restating the conclusion of the univariate least squares. $\hat\beta = \frac{\langle x, y \rangle}{\langle x, x \rangle}$. And the residual is $r = y - x \hat\beta$. 
+And let's clarify a terminology "regress $b$ on $a$".
+It means that we perform simple univariate regression of $b$ on $a$ and take the residual of $b$. 
+To view it spatially, we can see that the residual of $b$ is orthogonal to $a$.
+
+With this in mind, we can state the algorithm **"Regression by Successive Orthogonalization"**.
+Suppose we are interested in carrying out the coefficient of the last column of $X$, *i.e.* $x_p$. Then we do the following:
+
+1. Initialize $z_1 = x_1$.
+2. For $j = 2, \cdots, p$, regress $x_j$ on $z_1, \cdots, z_{j - 1}$ and set the residual as $z_j$.
+3. Regress $y$ in $z_p$ which gives rise to $\hat\beta_p$.
+
+Note that we can always reorder the column of interest to the last one. So, this algorithm is applicable to all columns in $X$.
+
+Furthermore, step 2 actually corresponds to performing Gram-Schmidt process on $X$, which results in $X = Q R$. 
+And it turns out that (it is easy to check) $\hat\beta = R^{-1} Q' y$ and $\hat{y} = Q Q' y$.
+
+
+# Multiple outputs
+
+Another scencario to look into is when there are $Y_1, \cdots, Y_K$.
+We can write the full model as $Y = X B + E$.
+And $\rss(B) = \tr[ (Y - XB)' (Y - XB)]$.
+This gives rise to the solution $\hat{B} = (X' X)^{-1} X'Y$.
+We may have correlated residual for $Y_1, \cdots, Y_K$, namely $\cov(\epsilon) = \Sigma$.
+In this case, we may want to factor in the correlation structure in the $\rss$, which gives rise to $\rss(B; \Sigma) = \sum_{i = 1}^N (y_i - f(x_i))' \Sigma^{-1} (y_i - f(x_i))$. 
+But it turns out that the solution is kept unchanged (to check we need some results from [here](https://en.wikipedia.org/wiki/Matrix_calculus#Scalar-by-matrix_identities)).
+Essentially, we don't need to consider the correlated residual between $Y_k$.
+But if $\Sigma_i \ne \Sigma_{i'}$ (namely different individual may have different correlation structure), then the correlation does matter in this case.
+
+The multiple outcome problem will be discussed in details in section 3.7 where we will see when fitting them jointly does make a difference.
+
+
+
+
+
+

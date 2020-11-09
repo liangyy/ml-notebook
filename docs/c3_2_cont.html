@@ -11,7 +11,7 @@
 
 
 
-<title>ESL reading notes</title>
+<title>Chapter 3: 3.2.3 - 3.2.4</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -383,28 +383,40 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">ESL reading notes</h1>
+<h1 class="title toc-ignore">Chapter 3: 3.2.3 - 3.2.4</h1>
 <h4 class="date">08 November, 2020</h4>
 
 </div>
 
 
-<div id="chapter-2" class="section level1">
-<h1><span class="header-section-number">1</span> Chapter 2</h1>
-<ul>
-<li>2.1 - 2.5 <a href="c2_21_25.html">note</a></li>
-<li>2.6 <a href="c2_6.html">note</a></li>
-<li>2.7 <a href="c2_7.html">note</a>: Very insightful overview on why we want to have structured regression models.</li>
-<li>2.8 <a href="c2_8.html">note</a>: Overview of restricted estimators.</li>
-<li>2.9 <a href="c2_9.html">note</a>: Model selection and the Bias-Variance tradeoff.</li>
-</ul>
+<p><span class="math display">\[
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\rss}{\text{RSS}}
+\newcommand{\tr}{\text{tr}}
+\]</span></p>
+<p>Here we discuss some important take-away’s of least squares problem. I wish I’ve got the points of these when I first learned least squares. But apparently, I did not and it took me quite a while to learn some of these insightful pieces.</p>
+<div id="multiple-regression-from-simple-univariate-regression" class="section level1">
+<h1><span class="header-section-number">1</span> Multiple regression from simple univariate regression</h1>
+<p>Here we discuss an algorithm to obtain the regression coefficient of <span class="math inline">\(x_p\)</span> when we have multiple predictors fitting into the model jointly. This algorithm essentially convert the original problem to simple univariate regression.</p>
+<p>Let’s begin with restating the conclusion of the univariate least squares. <span class="math inline">\(\hat\beta = \frac{\langle x, y \rangle}{\langle x, x \rangle}\)</span>. And the residual is <span class="math inline">\(r = y - x \hat\beta\)</span>. And let’s clarify a terminology “regress <span class="math inline">\(b\)</span> on <span class="math inline">\(a\)</span>”. It means that we perform simple univariate regression of <span class="math inline">\(b\)</span> on <span class="math inline">\(a\)</span> and take the residual of <span class="math inline">\(b\)</span>. To view it spatially, we can see that the residual of <span class="math inline">\(b\)</span> is orthogonal to <span class="math inline">\(a\)</span>.</p>
+<p>With this in mind, we can state the algorithm <strong>“Regression by Successive Orthogonalization”</strong>. Suppose we are interested in carrying out the coefficient of the last column of <span class="math inline">\(X\)</span>, <em>i.e.</em> <span class="math inline">\(x_p\)</span>. Then we do the following:</p>
+<ol style="list-style-type: decimal">
+<li>Initialize <span class="math inline">\(z_1 = x_1\)</span>.</li>
+<li>For <span class="math inline">\(j = 2, \cdots, p\)</span>, regress <span class="math inline">\(x_j\)</span> on <span class="math inline">\(z_1, \cdots, z_{j - 1}\)</span> and set the residual as <span class="math inline">\(z_j\)</span>.</li>
+<li>Regress <span class="math inline">\(y\)</span> in <span class="math inline">\(z_p\)</span> which gives rise to <span class="math inline">\(\hat\beta_p\)</span>.</li>
+</ol>
+<p>Note that we can always reorder the column of interest to the last one. So, this algorithm is applicable to all columns in <span class="math inline">\(X\)</span>.</p>
+<p>Furthermore, step 2 actually corresponds to performing Gram-Schmidt process on <span class="math inline">\(X\)</span>, which results in <span class="math inline">\(X = Q R\)</span>. And it turns out that (it is easy to check) <span class="math inline">\(\hat\beta = R^{-1} Q&#39; y\)</span> and <span class="math inline">\(\hat{y} = Q Q&#39; y\)</span>.</p>
 </div>
-<div id="chapter-3" class="section level1">
-<h1><span class="header-section-number">2</span> Chapter 3</h1>
-<ul>
-<li>3.1 - 3.2.2 <a href="c3_1_.html">note</a>: Introduction to least squares.</li>
-<li>3.2.3 - 3.2.4 <a href="c3_2_cont.html">note</a>: Least squares with multiple <span class="math inline">\(X\)</span> or <span class="math inline">\(Y\)</span>.</li>
-</ul>
+<div id="multiple-outputs" class="section level1">
+<h1><span class="header-section-number">2</span> Multiple outputs</h1>
+<p>Another scencario to look into is when there are <span class="math inline">\(Y_1, \cdots, Y_K\)</span>. We can write the full model as <span class="math inline">\(Y = X B + E\)</span>. And <span class="math inline">\(\rss(B) = \tr[ (Y - XB)&#39; (Y - XB)]\)</span>. This gives rise to the solution <span class="math inline">\(\hat{B} = (X&#39; X)^{-1} X&#39;Y\)</span>. We may have correlated residual for <span class="math inline">\(Y_1, \cdots, Y_K\)</span>, namely <span class="math inline">\(\cov(\epsilon) = \Sigma\)</span>. In this case, we may want to factor in the correlation structure in the <span class="math inline">\(\rss\)</span>, which gives rise to <span class="math inline">\(\rss(B; \Sigma) = \sum_{i = 1}^N (y_i - f(x_i))&#39; \Sigma^{-1} (y_i - f(x_i))\)</span>. But it turns out that the solution is kept unchanged (to check we need some results from <a href="https://en.wikipedia.org/wiki/Matrix_calculus#Scalar-by-matrix_identities">here</a>). Essentially, we don’t need to consider the correlated residual between <span class="math inline">\(Y_k\)</span>. But if <span class="math inline">\(\Sigma_i \ne \Sigma_{i&#39;}\)</span> (namely different individual may have different correlation structure), then the correlation does matter in this case.</p>
+<p>The multiple outcome problem will be discussed in details in section 3.7 where we will see when fitting them jointly does make a difference.</p>
 </div>
 
 
