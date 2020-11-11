@@ -1,0 +1,71 @@
+---
+title: "Chapter 3: 3.3"
+# author: Yanyu Liang
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+$$
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\rss}{\text{RSS}}
+\newcommand{\tr}{\text{tr}}
+$$
+
+Here we discuss **Subset Selection**.
+
+There are two reasons why we may want to improve upon least squares. 
+
+1. Prediction accuracy. Sometimes, the least squares have large variance even if the bias is low. If we could set some coefficients to zero, it helps reduce the variance.
+2. Interpretation. It is hard to interpret the model if we have too many predictors. If we want to get a "big picture", we may want to discard some predictors.
+
+# Best-subset selection
+
+The idea is to select the subset of predictors that minimizes the $\rss$ for each subset $k \in \{1, \cdots, p\}$. The *leaps and bounds* algo is efficient solver of this problem for upto $p$ = 30  or 40.
+The resulting models are not necessarily nested. 
+How to choose $k$? 
+It is about the bias-variance tradeoff, *i.e.* as $k$ increases, the bias decreases but the variance increases.
+The $\rss$ on training data is always decreasing. 
+We need to choose $k$ such that it minimizes the estimated expected prediction error and it should be as small as possible (more discussion in [here](#choose_k). 
+
+Usually, we train a sequence of models based on a sequence of hyperparameters and then we use cross-validation to estimate the prediction error. 
+Another option is to use AIC.
+
+# Forward- and backward-stepwise selection
+
+**Forward-stepwise selection** starts with intercept and greedily add one more predictor at a time which minimizes the $\rss$ on training data.
+This routine can be implemented in an efficient way using QR decomposition. The resulting models are nested. 
+It may be preferred than best-subset for two reasons:
+
+* Computationally, for large $p$, best-subset selection is infeasible. But forward-stepwise is feasible.
+* Statistically, the forward-stepwise selection is searching in a more constrained way, so that it may have higher bias but lower variance than the best-subset.
+
+**Backward-stepwise selection** starts with the full model and at each step greedily remove one predictor which has "smallest impact on the fit". 
+Note that, unlike forward selection, backward selection can only be used when $N > p$.
+
+The hybrid approach is implemented on the top of forward and backword selection.
+At each step, it either include or exclude one predictor depending on some criteria (like AIC, implemented in R package `step`). Also, another package uses F-statistic to determine if a term should be added or dropped. But it did not account for multiple testing and the standard error of the coefficients in the resulting model is not valid since the search process also play a role (which is not considered). To do so, we may need bootstrap.
+
+For categorical variable, these coefficients should be handled as a group and the dof should be counted properly.
+
+# Forward-stagewise selection
+
+**Forward-stagewise selection** works with the residuals. 
+At each step, it selects the predictor that has highest correlation with the residual and it include that predictor into the model by running a simple linear regression with residual against that predictor. 
+This routine is repeated until the residual is not correlated with any predictor.
+Note that it is possible that one predictor is selected multiple times. 
+And with this fact, the forward-stagewise approach will take many more than $k$ steps to reach least squares solution.
+In the simulated data example, the forward-stagewise approach does worse than others when $k$ is small. But it eventually catches up as $k$ gets bigger.
+We can think of forward-stagewise as a even more constrained search than forward-stepwise.
+
+But it turns out that such "inefficient" fitting routine is competitive in very high-dimensional problem (we will see in section 3.8.1).
+
+# About choosing $k$ {#choose_k}
+
+If we use cross-validation to estimate the prediction performance, we know that the estimation as uncertainty. 
+The rule that this section uses is to choose among the models whose prediction performance is within 1 SE of the minimum.
+
+

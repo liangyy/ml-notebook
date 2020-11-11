@@ -15,5 +15,6 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 
 * 3.1 - 3.2.2 [note](c3_1_.html): Introduction to least squares.
 * 3.2.3 - 3.2.4 [note](c3_2_cont.html): Least squares with multiple $X$ or $Y$.
+* 3.3 [note](c3_3.html): Subset selection.
 
 
