@@ -11,7 +11,7 @@
 
 
 
-<title>ESL reading notes</title>
+<title>Chapter 3: 3.4 - 3.4.1</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -383,30 +383,45 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">ESL reading notes</h1>
+<h1 class="title toc-ignore">Chapter 3: 3.4 - 3.4.1</h1>
 <h4 class="date">14 November, 2020</h4>
 
 </div>
 
 
-<div id="chapter-2" class="section level1">
-<h1><span class="header-section-number">1</span> Chapter 2</h1>
-<ul>
-<li>2.1 - 2.5 <a href="c2_21_25.html">note</a></li>
-<li>2.6 <a href="c2_6.html">note</a></li>
-<li>2.7 <a href="c2_7.html">note</a>: Very insightful overview on why we want to have structured regression models.</li>
-<li>2.8 <a href="c2_8.html">note</a>: Overview of restricted estimators.</li>
-<li>2.9 <a href="c2_9.html">note</a>: Model selection and the Bias-Variance tradeoff.</li>
-</ul>
-</div>
-<div id="chapter-3" class="section level1">
-<h1><span class="header-section-number">2</span> Chapter 3</h1>
-<ul>
-<li>3.1 - 3.2.2 <a href="c3_1_.html">note</a>: Introduction to least squares.</li>
-<li>3.2.3 - 3.2.4 <a href="c3_2_cont.html">note</a>: Least squares with multiple <span class="math inline">\(X\)</span> or <span class="math inline">\(Y\)</span>.</li>
-<li>3.3 <a href="c3_3.html">note</a>: Subset selection.</li>
-<li>3.4.1 <a href="c3_4.html">note</a>: Ridge regression.</li>
-</ul>
+<p><span class="math display">\[
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\rss}{\text{RSS}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\ridge}{\text{ridge}}
+\newcommand{\ls}{\text{ls}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\df}{\text{df}}
+\]</span></p>
+<p>Here we discuss the <strong>Shrinkage Methods</strong>.</p>
+<p>The subset methods is more interprable than the full model and it is possible that it has lower prediction error. But since the training routine is a discrete process, it may have high variance which may lead to the increase in prediction error. Here we describe shrinkage methods which are continuous so that they suffer less from high variability.</p>
+<div id="ridge-regression" class="section level1">
+<h1><span class="header-section-number">1</span> Ridge regression</h1>
+<p><span class="math display">\[\hat\beta^\ridge = \arg\min_\beta \{ \rss + \lambda \|\beta\|_2^2 \}\]</span> where <span class="math inline">\(\lambda \ge 0\)</span> as complexity parameter controls the amount of shrinkage. And equivalent problem is <span class="math display">\[\begin{aligned}
+  \hat\beta^\ridge &amp;= \arg\min_\beta \rss \\
+  \text{subject to}~ \|\beta\|_2^2 \le t
+\end{aligned}\]</span> And there is one-to-one correspondence between <span class="math inline">\(\lambda\)</span> and <span class="math inline">\(t\)</span> so that the two problems are equivalent.</p>
+<p><strong>Why ridge regression could reduce the variance?</strong> Suppose there are many correlated predictors, we cannot determine their coefficient acurrately, which leads to high variance. Here we explicitly impose a constraint on coefficients to account for this effect.</p>
+<p>The solution is sensitive to the scaling of predictor. So, we should usually standardize the predictor before running ridge regression. Another thing to mention is that the penalty should not be assigned to intercept (and maybe some other covariates). If intercept is penalized, the solution will depend on where you put the <span class="math inline">\(\bar{y}\)</span>. It turns out that we could regress out intercept from both <span class="math inline">\(y\)</span> and <span class="math inline">\(X\)</span> and then do the ridge regression which will give the equivalent result as assigning penalty to only <span class="math inline">\(X\)</span> but not intercept.</p>
+<p>Assuming we have already taken care of scaling and intercept, the solution is <span class="math inline">\(\beta^\ridge = (X&#39;X + \lambda I)^{-1} X&#39;y\)</span>. And this result reveals the original motivation of ridge regression, in which it was proposed to resolve the case if non-invertiable <span class="math inline">\(X&#39;X\)</span>. And the special is that if <span class="math inline">\(X\)</span> has orthogonal columns, <span class="math inline">\(\hat\beta^\ridge = \hat\beta / (1 + \lambda)\)</span>.</p>
+<p>The ridge regression can also be seen as the posterior mode/mean/max under more assumptions. Suppose <span class="math inline">\(y_i \sim N(x\beta, \sigma^2)\)</span> and <span class="math inline">\(\beta_j \sim_{iid} N(-, \tau^2)\)</span>, then the ridge regression objective is the negative log-posterior density of <span class="math inline">\(\beta\)</span> with <span class="math inline">\(\lambda = \sigma^2 / \tau^2\)</span>. In other word, ridge regression assigns higher weights to direction where data shows high variation (so that these directions could be estimated more accurately) and down weight the opposite. But implicitly, it requires the outcome to vary actively along these directions as well (which may or may not hold in practice).</p>
+<p>Another view related to SVD. Consider column centered and standardized matrix <span class="math inline">\(X\)</span> and <span class="math inline">\(X = U D V&#39;\)</span>. We have <span class="math inline">\(\hat{y}^\ls = X \hat\beta^\ls = UU&#39;y\)</span>. So, <span class="math inline">\(\hat{y}\)</span> is the projected <span class="math inline">\(y\)</span> onto the column space of <span class="math inline">\(X\)</span> (in this case it is represented/calculated via the basis <span class="math inline">\(U\)</span>). And for ridge regression, we have <span class="math inline">\(X\hat\beta^\ridge = \sum_j u_j \frac{d_j^2}{d_j^2 + \lambda} u_j&#39; y\)</span> where the basis are re-weighted/shrinked.</p>
+<p>Also, note that the PCA on the data matrix <span class="math inline">\(X\)</span> (<em>i.e.</em> EVD on <span class="math inline">\(X&#39;X / P\)</span>) can be carried out by <span class="math inline">\(X&#39;X = V D^2 V&#39;\)</span>. So, the weighting scheme shown above is actually weighting basis according to the variation captured.</p>
+<p>In the end, we introduce the effective degrees of freedom, <span class="math display">\[\begin{aligned}
+  \df(\lambda) &amp;= \tr[X(X&#39;X + \lambda I)^{-1} X&#39;] \\
+  &amp;= \tr(H_\lambda) \\
+  &amp;= \sum_j \frac{d_j^2}{d_j^2 + \lambda}
+\end{aligned}\]</span> By “effective” we want to account for the fact that although <span class="math inline">\(\beta_j\)</span> could be all non-zero in ridge regression fit, they are subject to a constraint. The definition will be discussed more in section 3.4.4.</p>
 </div>
 
 

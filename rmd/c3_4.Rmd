@@ -1,0 +1,72 @@
+---
+title: "Chapter 3: 3.4 - 3.4.1"
+# author: Yanyu Liang
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+$$
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\rss}{\text{RSS}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\ridge}{\text{ridge}}
+\newcommand{\ls}{\text{ls}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\df}{\text{df}}
+$$
+
+Here we discuss the **Shrinkage Methods**.
+
+The subset methods is more interprable than the full model and it is possible that it has lower prediction error. 
+But since the training routine is a discrete process, it may have high variance which may lead to the increase in prediction error.
+Here we describe shrinkage methods which are continuous so that they suffer less from high variability.
+
+# Ridge regression
+
+$$\hat\beta^\ridge = \arg\min_\beta \{ \rss + \lambda \|\beta\|_2^2 \}$$
+where $\lambda \ge 0$ as complexity parameter controls the amount of shrinkage.
+And equivalent problem is
+$$\begin{aligned}
+  \hat\beta^\ridge &= \arg\min_\beta \rss \\
+  \text{subject to}~ \|\beta\|_2^2 \le t
+\end{aligned}$$
+And there is one-to-one correspondence between $\lambda$ and $t$ so that the two problems are equivalent.
+
+**Why ridge regression could reduce the variance?** Suppose there are many correlated predictors, we cannot determine their coefficient acurrately, which leads to high variance. Here we explicitly impose a constraint on coefficients to account for this effect.
+
+The solution is sensitive to the scaling of predictor. 
+So, we should usually standardize the predictor before running ridge regression.
+Another thing to mention is that the penalty should not be assigned to intercept (and maybe some other covariates).
+If intercept is penalized, the solution will depend on where you put the $\bar{y}$.
+It turns out that we could regress out intercept from both $y$ and $X$ and then do the ridge regression which will give the equivalent result as assigning penalty to only $X$ but not intercept.
+
+Assuming we have already taken care of scaling and intercept, the solution is $\beta^\ridge = (X'X + \lambda I)^{-1} X'y$.
+And this result reveals the original motivation of ridge regression, in which it was proposed to resolve the case if non-invertiable $X'X$.
+And the special is that if $X$ has orthogonal columns, $\hat\beta^\ridge = \hat\beta / (1 + \lambda)$.
+
+The ridge regression can also be seen as the posterior mode/mean/max under more assumptions.
+Suppose $y_i \sim N(x\beta, \sigma^2)$ and $\beta_j \sim_{iid} N(-, \tau^2)$, then the ridge regression objective is the negative log-posterior density of $\beta$ with $\lambda = \sigma^2 / \tau^2$.
+In other word, ridge regression assigns higher weights to direction where data shows high variation (so that these directions could be estimated more accurately) and down weight the opposite.
+But implicitly, it requires the outcome to vary actively along these directions as well (which may or may not hold in practice).
+
+Another view related to SVD. Consider column centered and standardized matrix $X$ and $X = U D V'$. 
+We have $\hat{y}^\ls = X \hat\beta^\ls = UU'y$.
+So, $\hat{y}$ is the projected $y$ onto the column space of $X$ (in this case it is represented/calculated via the basis $U$).
+And for ridge regression, we have $X\hat\beta^\ridge = \sum_j u_j \frac{d_j^2}{d_j^2 + \lambda} u_j' y$ where the basis are re-weighted/shrinked.
+
+Also, note that the PCA on the data matrix $X$ (*i.e.* EVD on $X'X / P$) can be carried out by $X'X = V D^2 V'$. So, the weighting scheme shown above is actually weighting basis according to the variation captured.
+
+In the end, we introduce the effective degrees of freedom, 
+$$\begin{aligned}
+  \df(\lambda) &= \tr[X(X'X + \lambda I)^{-1} X'] \\
+  &= \tr(H_\lambda) \\
+  &= \sum_j \frac{d_j^2}{d_j^2 + \lambda}
+\end{aligned}$$
+By "effective" we want to account for the fact that although $\beta_j$ could be all non-zero in ridge regression fit, they are subject to a constraint. The definition will be discussed more in section 3.4.4.
+
+
+
