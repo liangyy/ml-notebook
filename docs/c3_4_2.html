@@ -11,7 +11,7 @@
 
 
 
-<title>ESL reading notes</title>
+<title>Chapter 3: 3.4.2 - 3.4.3</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -383,31 +383,47 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">ESL reading notes</h1>
+<h1 class="title toc-ignore">Chapter 3: 3.4.2 - 3.4.3</h1>
 <h4 class="date">16 November, 2020</h4>
 
 </div>
 
 
-<div id="chapter-2" class="section level1">
-<h1><span class="header-section-number">1</span> Chapter 2</h1>
-<ul>
-<li>2.1 - 2.5 <a href="c2_21_25.html">note</a></li>
-<li>2.6 <a href="c2_6.html">note</a></li>
-<li>2.7 <a href="c2_7.html">note</a>: Very insightful overview on why we want to have structured regression models.</li>
-<li>2.8 <a href="c2_8.html">note</a>: Overview of restricted estimators.</li>
-<li>2.9 <a href="c2_9.html">note</a>: Model selection and the Bias-Variance tradeoff.</li>
-</ul>
+<p><span class="math display">\[
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\rss}{\text{RSS}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\ridge}{\text{ridge}}
+\newcommand{\lasso}{\text{lasso}}
+\newcommand{\ls}{\text{ls}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\df}{\text{df}}
+\]</span></p>
+<div id="here-we-discuss-lasso." class="section level1">
+<h1><span class="header-section-number">1</span> Here we discuss <strong>Lasso</strong>.</h1>
+<p>We define lasso estimate as <span class="math display">\[\begin{aligned}
+  \hat\beta^\lasso &amp;= \arg\min_\beta \sum_i (y_i - X_i\beta)^2 \\
+  \text{subject to} &amp;~ \sum_j |\beta_j| \le t
+\end{aligned}\]</span> Again, we need to standardize <span class="math inline">\(X\)</span> and pre-subtract the mean (to account for intercept). And similar to ridge, we can write it in the equivalent Larangian form. <span class="math display">\[\begin{aligned}
+  \hat\beta^\lasso &amp;= \arg\min_\beta \{\frac{1}{2}\sum_i (y_i - X_i\beta)^2 + \lambda \sum_j |\beta_j|\}
+\end{aligned}\]</span> We can solve lasso problem using quadratic programming but there is an efficient algorithm for computing along the <span class="math inline">\(\lambda\)</span> sequence. When <span class="math inline">\(t\)</span> is very small, <span class="math inline">\(\hat\beta_j^\lasso = 0, \forall j\)</span>. And when <span class="math inline">\(t\)</span> is very large such that <span class="math inline">\(t \ge \sum_j |\hat\beta^\ls|\)</span>, then <span class="math inline">\(\hat\beta^\lasso = \hat\beta^\ls\)</span>. We can think of the lasso estimate as a continuous subset selection controlled by <span class="math inline">\(t\)</span>. A rough estimate is that for <span class="math inline">\(t = t_\max / 2\)</span>, the lasso shrink the least squares estimate by 50% on average. Sometimes, we use the scalled/standardized <span class="math inline">\(t\)</span>, which is <span class="math inline">\(s = t / \sum_j |\hat\beta_j^\ls|\)</span>.</p>
 </div>
-<div id="chapter-3" class="section level1">
-<h1><span class="header-section-number">2</span> Chapter 3</h1>
+<div id="subset-selection-ridge-lasso" class="section level1">
+<h1><span class="header-section-number">2</span> Subset selection, ridge, Lasso</h1>
+<p>If we have orthogonal (in column) <span class="math inline">\(X\)</span>, then these three approach as explicit formula.</p>
 <ul>
-<li>3.1 - 3.2.2 <a href="c3_1_.html">note</a>: Introduction to least squares.</li>
-<li>3.2.3 - 3.2.4 <a href="c3_2_cont.html">note</a>: Least squares with multiple <span class="math inline">\(X\)</span> or <span class="math inline">\(Y\)</span>.</li>
-<li>3.3 <a href="c3_3.html">note</a>: Subset selection.</li>
-<li>3.4.1 <a href="c3_4.html">note</a>: Ridge regression.</li>
-<li>3.4.2 - 3.4.3 <a href="c3_4_2.html">note</a>: Lasso and the geometric view.</li>
+<li>Best subset (size <span class="math inline">\(M\)</span>), <strong>hard-thresholding</strong>: <span class="math inline">\(\hat\beta_j^\ls \cdot \mathbb{I}(|\hat\beta_j^\ls \ge |\hat\beta_{(M)}|)\)</span></li>
+<li>Ridge: <span class="math inline">\(\hat\beta_j^\ls / (1 + \lambda)\)</span></li>
+<li>Lasso, <strong>soft-thresholding</strong>: <span class="math inline">\(\text{sign}(\hat\beta_j^\ls)(|\hat\beta_j^\ls - \lambda)_+\)</span></li>
 </ul>
+<p>And for non-orthogonal <span class="math inline">\(X\)</span>, we consider a general but simple case: 2-dimentional <span class="math inline">\(X\)</span>. We have the following figure showing the solution. <img src="../figures/c343.png" /> The contour shows the <span class="math inline">\(\hat\beta\)</span> where the <span class="math inline">\(\rss\)</span> is constant and the center, <span class="math inline">\(\hat\beta\)</span>, is lesst sqaures solution. Whenever the ellipse hits the corner of the diamond (for lasso constraint), we will have some coefficient equal to zero as lasso solution.</p>
+<p>We can generalize the constraint to arbitrary <span class="math inline">\(q \ge 0\)</span>. Say, <span class="math inline">\(\sum_j |beta_j|^q \le k\)</span>. And each <span class="math inline">\(q\)</span> value corresponds to a prior distribution of <span class="math inline">\(\beta_j\)</span>. We have similar figure as before. <img src="../figures/c343_2.png" /> From here we can see that <span class="math inline">\(q = 1\)</span> is lasso which is the smallest <span class="math inline">\(q\)</span> such that the constraint is a convex set. And best subset selection is the most extreme case <span class="math inline">\(q = 0\)</span>.</p>
+<p>It turns out that it is not worth trying out <span class="math inline">\(q\)</span> other than 0, 1, 2. Note that for <span class="math inline">\(q \in (1, 2)\)</span>, the constraint is differentiable at coordinate so it won’t result in sparse solution. To get some compromise between lasso and ridge, the alternative way (other than setting <span class="math inline">\(q \in (1, 2)\)</span> which gives non-sparse solution), elastic net has been introduced: <span class="math inline">\(\lambda \sum_j (\alpha \beta_j^2 + (1 - \alpha) |\beta_j|)\)</span> which goes induce sparse solution even though we cannot easily see its contour difference from relaxing <span class="math inline">\(q\)</span>. <img src="../figures/c343_3.png" /></p>
 </div>
 
 

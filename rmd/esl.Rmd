@@ -17,5 +17,6 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 * 3.2.3 - 3.2.4 [note](c3_2_cont.html): Least squares with multiple $X$ or $Y$.
 * 3.3 [note](c3_3.html): Subset selection.
 * 3.4.1 [note](c3_4.html): Ridge regression.
+* 3.4.2 - 3.4.3 [note](c3_4_2.html): Lasso and the geometric view.
 
 
