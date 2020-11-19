@@ -11,7 +11,7 @@
 
 
 
-<title>ESL reading notes</title>
+<title>Chapter 3: 3.4.4</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -383,32 +383,51 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">ESL reading notes</h1>
+<h1 class="title toc-ignore">Chapter 3: 3.4.4</h1>
 <h4 class="date">18 November, 2020</h4>
 
 </div>
 
 
-<div id="chapter-2" class="section level1">
-<h1><span class="header-section-number">1</span> Chapter 2</h1>
-<ul>
-<li>2.1 - 2.5 <a href="c2_21_25.html">note</a></li>
-<li>2.6 <a href="c2_6.html">note</a></li>
-<li>2.7 <a href="c2_7.html">note</a>: Very insightful overview on why we want to have structured regression models.</li>
-<li>2.8 <a href="c2_8.html">note</a>: Overview of restricted estimators.</li>
-<li>2.9 <a href="c2_9.html">note</a>: Model selection and the Bias-Variance tradeoff.</li>
-</ul>
-</div>
-<div id="chapter-3" class="section level1">
-<h1><span class="header-section-number">2</span> Chapter 3</h1>
-<ul>
-<li>3.1 - 3.2.2 <a href="c3_1_.html">note</a>: Introduction to least squares.</li>
-<li>3.2.3 - 3.2.4 <a href="c3_2_cont.html">note</a>: Least squares with multiple <span class="math inline">\(X\)</span> or <span class="math inline">\(Y\)</span>.</li>
-<li>3.3 <a href="c3_3.html">note</a>: Subset selection.</li>
-<li>3.4.1 <a href="c3_4.html">note</a>: Ridge regression.</li>
-<li>3.4.2 - 3.4.3 <a href="c3_4_2.html">note</a>: Lasso and the geometric view.</li>
-<li>3.4.4 <a href="c3_4_4.html">note</a>: Least angle regression.</li>
-</ul>
+<p><span class="math display">\[
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\rss}{\text{RSS}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\ridge}{\text{ridge}}
+\newcommand{\lasso}{\text{lasso}}
+\newcommand{\ls}{\text{ls}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\df}{\text{df}}
+\]</span></p>
+<p>We discuss <strong>Least angle regression</strong> (LAR).</p>
+<p>I should say that this part is completely new to me so I could miss out important aspect when taking the notes. And I’m sure that I may want to re-visit this topic whenever I need to.</p>
+<p>Similar to forward stepwise regression, at each iteration, it tries to add one more variable into the active set and update the current fit including all active variables. But LAR uses different criteria to include a variable and the update rule is also different.</p>
+<p>At first, LAR selects the variable that correlates most with the response. The fitting is not a complete fit but we carry of the coefficient of the selected variable such that the correlation between the residual and some other variables are the same as the selected one (we consider the absolute correlation). Then, we include that variable into the active set and repeat this procedure.</p>
+<p>So, at each iteration, we make sure that the angle between the residual and all variables in the active set are the same. And such angle is descreasing as the procedure goes. The solution will converge to least squares (LS) solution when all variables are included into the active set. For completeness, I copy the algorithm of LAR below. <img src="../figures/lar_algo.png" /></p>
+<p>Let go into the details within the iteration. Suppose at step <span class="math inline">\(k\)</span>, we have active set <span class="math inline">\(A_k\)</span> and we know the coefficient <span class="math inline">\(\beta_{A_k}\)</span> before the update (so that there are <span class="math inline">\(k - 1\)</span> non-zeros and one zero coefficient). We know that the the residual now is <span class="math inline">\(r_k = y - X_{A_k} \beta_{A_k}\)</span>.</p>
+<p>First, we argue that the update direction should be <span class="math inline">\(\delta_k = (X_{A_k}&#39;X_{A_k})^{-1} X_{A_k}&#39; r_k\)</span> which guaranttees that the update <span class="math inline">\(\beta_{A_k}(\alpha) = \beta_{A_k} + \alpha \cdot \delta_k\)</span> satisfy the requirement that the correlations between <span class="math inline">\(r_k(\alpha)\)</span> and <span class="math inline">\(X_{A_k}\)</span> are the same for all variables. <span class="math display">\[\begin{aligned}
+  r_k(\alpha) &amp;= r_k - \alpha X_{A_k} \delta_k \\
+  &amp;= r_k - \alpha X_{A_k} (X_{A_k}&#39;X_{A_k})^{-1} X_{A_k}&#39; r_k \\
+  X_{A_k}&#39; r_k(\alpha) &amp;= X_{A_k}&#39; r_k - \alpha X_{A_k}&#39; r_k \\
+  &amp;= (1 - \alpha) X_{A_k}&#39; r_k
+\end{aligned}\]</span> This results indicates that this update rule will shrink all correlations to residual by a factor of <span class="math inline">\(1 - \alpha\)</span>. So if they are the same before, they will be the same after the update.</p>
+<p>Also, <span class="math inline">\(u_k = X_{A_k} \delta_k\)</span> makes the smallest angle between all active predictors. And this is where “least angle” comes from.</p>
+<p>And the <span class="math inline">\(\alpha\)</span> should be determined by making sure that the maximum correlation of the updated residual and other varible matches what we have in the active set.</p>
+<p>At each iteration, a new variable got picked up and we add <span class="math inline">\(\alpha \delta\)</span> to the current coefficients. In the below we show how the residual correlations change as we go along the iterations (from left to right). <img src="../figures/lar_path.png" /> Note that we can determine the value of <span class="math inline">\(\alpha\)</span> at each iteration. To see this, we can use the relation as below. <span class="math display">\[\begin{aligned}
+  X_0&#39; r_k(\alpha) &amp;= X_0&#39; r_k - \alpha X_0&#39; X_{A_k} \delta_k
+\end{aligned}\]</span> , where <span class="math inline">\(X_0\)</span> are the variables outside active set. A naive thing could do is to go through each of the variable (see the <span class="math inline">\(p\)</span>th) in <span class="math inline">\(X_0\)</span> and calculate the <span class="math inline">\(\alpha\)</span> such that <span class="math inline">\(R_{0, k}^p - \alpha X_0^p&#39; u_k = (1 - \alpha) R_k\)</span>, where <span class="math inline">\(R\)</span> represents the correlation.</p>
+<p>Note that the lasso coefficient profile is quite similar to the LAR one. <img src="../figures/lar_lasso.png" /> And they differ when one coefficient passes through zero. And this leads to a modification of LAR algorithm to solve lasso path. <img src="../figures/lar_lasso_algo.png" /> The LAR algorithm is very efficient (same order of computation as least squares for <span class="math inline">\(p\)</span> predictors). And it always takes <span class="math inline">\(p\)</span> steps to reach LS solution. This algorithm above is efficient to solve lasso problem as any kind especially when <span class="math inline">\(p &gt;&gt; N\)</span>.</p>
+<p>Next, we want to talk a bit about why LAR path is similar to lasso path. First, let’s consider LAR at some iteration. <span class="math display">\[x_j&#39; (y - X\beta) = \gamma \cdot s_j~, \forall j \in A\]</span> , where <span class="math inline">\(s_j = \{1, -1\}\)</span> representing the sign of the correlation. And by construction <span class="math display">\[|x_k&#39; (y - X\beta)| \le \gamma ~,\forall k \notin A\]</span></p>
+<p>OK, then consider the lasso problem which minimizes <span class="math display">\[\frac{1}{2} \|y - X\beta\|_2^2 + \lambda \|\beta\|_1\]</span>. Let <span class="math inline">\(B\)</span> be the active set in this case. If the variable is differentiable (non-zero), then the stationary condition is (all active variable should satisfy this) <span class="math display">\[x_j&#39; (y - X\beta) = \lambda \cdot \text{sign}(\beta_j),~\forall j \in B\]</span>.</p>
+<p>So, we can see that as long as <span class="math inline">\(s_j\)</span> matches <span class="math inline">\(\text{sign}(\beta_j)\)</span>, the LAR matches the stationary condition of lasso. Note that <span class="math inline">\(s_j\)</span> won’t change the sign in LAR (its magnitude will go down at each iteration). And when this variable <span class="math inline">\(j\)</span> got initially picked up <span class="math inline">\(\beta_j\)</span> should be consistent with <span class="math inline">\(s_j\)</span>. So that when <span class="math inline">\(\beta_j\)</span> hits zero and changes the sign, it starts to violate the matched sign requirement. And that’s why we need to modify LAR algorithm to handle this situation.</p>
+<p>At the end, the performance of forward stepwise, LAR, lasso, and stagewise. <img src="../figures/lar_compare.png" /> Here we compare the performance along the fitting profile. We can see that stepwise improves quickly but it gets overfit afterwards quickly as well and its best performance is not that great. Other approaches fits more slowly but they achieve better solution.</p>
+<div id="tbc" class="section level1">
+<h1><span class="header-section-number">1</span> TBC</h1>
 </div>
 
 
