@@ -11,6 +11,7 @@ $$
 \newcommand{\tdata}{\mathcal{T}}
 \newcommand{\bias}{\text{Bias}}
 \newcommand{\var}{\text{Var}}
+\newcommand{\cov}{\text{Cov}}
 \newcommand{\rss}{\text{RSS}}
 \newcommand{\tr}{\text{tr}}
 \newcommand{\ridge}{\text{ridge}}
@@ -21,6 +22,8 @@ $$
 $$
 
 We discuss **Least angle regression** (LAR).
+
+# Least Angle Regression
 
 I should say that this part is completely new to me so I could miss out important aspect when taking the notes. 
 And I'm sure that I may want to re-visit this topic whenever I need to.
@@ -90,4 +93,21 @@ Here we compare the performance along the fitting profile.
 We can see that stepwise improves quickly but it gets overfit afterwards quickly as well and its best performance is not that great. 
 Other approaches fits more slowly but they achieve better solution.
 
-# TBC
+# The degrees-of-Freedom formula for LAR and lasso
+
+For a least squares problem with $k$ independent predictors, we can say that the degree of freedom is $k$. 
+But if we fit a bset subset selection with $k$ predictors, the degree of freedom is, in principle, greater than $k$.
+
+Here we have a more general definition of effective degree of freedom for the adaptively fitted model.
+We define the following.
+$$\begin{aligned}
+  \df(\hat{y}) &= \frac{1}{\sigma^2} \sum_{i = 1}^N \cov(\hat{y}_i, y_i)
+\end{aligned}$$
+, where the $\cov$ is the sampling covariance between the predicted and true outcome.
+For least squares and ridge regression where we have solution $\hat{y} = H_\lambda y$, we can easily have the dof in closed form: $\df(\hat{y}) = \tr(H_\lambda)$.
+The reason is that $$\cov(y_i, \hat{y}_i) = \cov(y_i, H_{i\cdot}y_i) = H_{ii} \var(y_i)$$. 
+
+For the best subset selection, we need to estimate dof by simulation and no closed form could be used.
+But for LAR and lasso, it turns out that, after the $k$th step of LAR procedure, **the effective degrees of freedom is exactly** $k$.
+For the lasso (modified LAR procedure), at any stage, the dof is approximately equal to the number of predictors. And the approximation works best at the last model in the sequence that contains $k$ predictors. 
+

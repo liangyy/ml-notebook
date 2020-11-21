@@ -384,7 +384,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Chapter 3: 3.4.4</h1>
-<h4 class="date">18 November, 2020</h4>
+<h4 class="date">21 November, 2020</h4>
 
 </div>
 
@@ -396,6 +396,7 @@ div.tocify {
 \newcommand{\tdata}{\mathcal{T}}
 \newcommand{\bias}{\text{Bias}}
 \newcommand{\var}{\text{Var}}
+\newcommand{\cov}{\text{Cov}}
 \newcommand{\rss}{\text{RSS}}
 \newcommand{\tr}{\text{tr}}
 \newcommand{\ridge}{\text{ridge}}
@@ -405,6 +406,8 @@ div.tocify {
 \newcommand{\df}{\text{df}}
 \]</span></p>
 <p>We discuss <strong>Least angle regression</strong> (LAR).</p>
+<div id="least-angle-regression" class="section level1">
+<h1><span class="header-section-number">1</span> Least Angle Regression</h1>
 <p>I should say that this part is completely new to me so I could miss out important aspect when taking the notes. And I’m sure that I may want to re-visit this topic whenever I need to.</p>
 <p>Similar to forward stepwise regression, at each iteration, it tries to add one more variable into the active set and update the current fit including all active variables. But LAR uses different criteria to include a variable and the update rule is also different.</p>
 <p>At first, LAR selects the variable that correlates most with the response. The fitting is not a complete fit but we carry of the coefficient of the selected variable such that the correlation between the residual and some other variables are the same as the selected one (we consider the absolute correlation). Then, we include that variable into the active set and repeat this procedure.</p>
@@ -426,8 +429,14 @@ div.tocify {
 <p>OK, then consider the lasso problem which minimizes <span class="math display">\[\frac{1}{2} \|y - X\beta\|_2^2 + \lambda \|\beta\|_1\]</span>. Let <span class="math inline">\(B\)</span> be the active set in this case. If the variable is differentiable (non-zero), then the stationary condition is (all active variable should satisfy this) <span class="math display">\[x_j&#39; (y - X\beta) = \lambda \cdot \text{sign}(\beta_j),~\forall j \in B\]</span>.</p>
 <p>So, we can see that as long as <span class="math inline">\(s_j\)</span> matches <span class="math inline">\(\text{sign}(\beta_j)\)</span>, the LAR matches the stationary condition of lasso. Note that <span class="math inline">\(s_j\)</span> won’t change the sign in LAR (its magnitude will go down at each iteration). And when this variable <span class="math inline">\(j\)</span> got initially picked up <span class="math inline">\(\beta_j\)</span> should be consistent with <span class="math inline">\(s_j\)</span>. So that when <span class="math inline">\(\beta_j\)</span> hits zero and changes the sign, it starts to violate the matched sign requirement. And that’s why we need to modify LAR algorithm to handle this situation.</p>
 <p>At the end, the performance of forward stepwise, LAR, lasso, and stagewise. <img src="../figures/lar_compare.png" /> Here we compare the performance along the fitting profile. We can see that stepwise improves quickly but it gets overfit afterwards quickly as well and its best performance is not that great. Other approaches fits more slowly but they achieve better solution.</p>
-<div id="tbc" class="section level1">
-<h1><span class="header-section-number">1</span> TBC</h1>
+</div>
+<div id="the-degrees-of-freedom-formula-for-lar-and-lasso" class="section level1">
+<h1><span class="header-section-number">2</span> The degrees-of-Freedom formula for LAR and lasso</h1>
+<p>For a least squares problem with <span class="math inline">\(k\)</span> independent predictors, we can say that the degree of freedom is <span class="math inline">\(k\)</span>. But if we fit a bset subset selection with <span class="math inline">\(k\)</span> predictors, the degree of freedom is, in principle, greater than <span class="math inline">\(k\)</span>.</p>
+<p>Here we have a more general definition of effective degree of freedom for the adaptively fitted model. We define the following. <span class="math display">\[\begin{aligned}
+  \df(\hat{y}) &amp;= \frac{1}{\sigma^2} \sum_{i = 1}^N \cov(\hat{y}_i, y_i)
+\end{aligned}\]</span> , where the <span class="math inline">\(\cov\)</span> is the sampling covariance between the predicted and true outcome. For least squares and ridge regression where we have solution <span class="math inline">\(\hat{y} = H_\lambda y\)</span>, we can easily have the dof in closed form: <span class="math inline">\(\df(\hat{y}) = \tr(H_\lambda)\)</span>. The reason is that <span class="math display">\[\cov(y_i, \hat{y}_i) = \cov(y_i, H_{i\cdot}y_i) = H_{ii} \var(y_i)\]</span>.</p>
+<p>For the best subset selection, we need to estimate dof by simulation and no closed form could be used. But for LAR and lasso, it turns out that, after the <span class="math inline">\(k\)</span>th step of LAR procedure, <strong>the effective degrees of freedom is exactly</strong> <span class="math inline">\(k\)</span>. For the lasso (modified LAR procedure), at any stage, the dof is approximately equal to the number of predictors. And the approximation works best at the last model in the sequence that contains <span class="math inline">\(k\)</span> predictors.</p>
 </div>
 
 
