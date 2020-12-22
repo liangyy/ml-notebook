@@ -20,4 +20,5 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 * 3.4.2 - 3.4.3 [note](c3_4_2.html): Lasso and the geometric view.
 * 3.4.4 [note](c3_4_4.html): Least angle regression.
 * 3.5 - 3.6 [note](c3_5.html): Using derived input directions.
+* 3.7 [note](c3_7.html): Multiple outcomes. 
 

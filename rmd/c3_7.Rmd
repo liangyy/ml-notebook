@@ -1,0 +1,54 @@
+---
+title: "Chapter 3: 3.7"
+# author: Yanyu Liang
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+$$
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\cov}{\text{Cov}}
+\newcommand{\corr}{\text{Corr}}
+\newcommand{\rss}{\text{RSS}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\ridge}{\text{ridge}}
+\newcommand{\pcr}{\text{pcr}}
+\newcommand{\ls}{\text{ls}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\df}{\text{df}}
+$$
+
+Here we discuss the situation of multiple outcome with shrinkage and selection.
+
+Note that a trivial thing to do is to run $Y_k$ separately, which means that we will have different $\lambda_k$ values for each of the outcome.
+
+But this solution may not be ideal. 
+An extreme case is that 
+$$\begin{aligned}
+  Y_k &= f(X) + \epsilon_k \\
+  Y_l &= f(X) + \epsilon_l
+\end{aligned}$$
+, where they share the same $f(\cdot)$.
+In this case, we should pool the two sets of observations together to maximize the power (make the best use of the data).
+
+"Combining response" is the key of **canonical correlation analysis** (CCA). 
+It is a data reduction technique for the case of having multiple $Y_k$. 
+The goal is to find two sequences of linearly independent $v_m$ and $u_m$ such that 
+$\corr^2(Yu_m, Xv_m)$ is maximized.
+Note that CCA could be computed via generalized SVD of $Y'X/N$ matrix (the matrices should be centered).
+
+Related to CCA, we can introduce the reduced rank regression in the context of multiple outcomes. 
+The objective is the following:$$\hat{B}^{rr}(m) = \arg\min_{\text{rank}(B) = m} \sum_i (Y_i - B' X_i)' \Sigma^{-1} (Y_i - B' X_i)$$.
+Here we assume that $\Sigma = \cov(\epsilon)$. By replacing $\Sigma$ with $Y'Y/N$, the result is given by the CCA of $X, Y$: $\hat{B}^{rr}(m) = \hat{B} U_m U_m^\dagger$ with $\hat{B}$ being the simple linear regression results. 
+In other word, the reduced rank regression solution is the projection of the original solution to $U_m$ space.
+And $\hat{Y}^{rr}(m) = H Y P_m$ with $P_m = U_m U_m^\dagger$ and $H$ is the hat matrix of the original linear regression.
+
+Besides, even though it seems that $(Y - X \hat{B})'(Y - X \hat{B}) / (N - pK)$ could be a better estimator of $\Sigma$, the solution does not change.
+
+Along this line, one could extend the reduced rank idea to a smooth version. For instance $\hat{B}^{c + w} = \hat{B} U \Lambda U^\dagger$ with $\lambda_m = \frac{c_m^2}{c_m^2 + p/N(1 - c_m^2)}$.
+With this, $\hat{Y}^{c + w} = H Y S^{c + w}, ~ S^{c + w} = U \Lambda U^\dagger$$. 
+Also, one could further do shrinkage based on $X$ space which leads to $\hat{Y}^{\ridge, c + w} = A_\lambda Y S^{c + w}$ with $A_\lambda = X(X'X + \lambda I)^{-1} X'$. 

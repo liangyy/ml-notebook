@@ -40,7 +40,7 @@ And if $M = P$, it is equivalent to least squares since we work in exactly the s
 # Partial Least Squares 
 
 Here we use both $X$ and $y$ to construct the linear combination. 
-Again, it is sensitive to scalingm so we assume $X_j$ is standardized.
+Again, it is sensitive to scaling so we assume $X_j$ is standardized.
 
 The procedure is described below.
 

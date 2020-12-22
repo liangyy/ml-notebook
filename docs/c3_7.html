@@ -11,7 +11,7 @@
 
 
 
-<title>Chapter 3: 3.5 - 3.6</title>
+<title>Chapter 3: 3.7</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -382,7 +382,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Chapter 3: 3.5 - 3.6</h1>
+<h1 class="title toc-ignore">Chapter 3: 3.7</h1>
 <h4 class="date">21 December, 2020</h4>
 
 </div>
@@ -395,6 +395,7 @@ div.tocify {
 \newcommand{\tdata}{\mathcal{T}}
 \newcommand{\bias}{\text{Bias}}
 \newcommand{\var}{\text{Var}}
+\newcommand{\cov}{\text{Cov}}
 \newcommand{\corr}{\text{Corr}}
 \newcommand{\rss}{\text{RSS}}
 \newcommand{\tr}{\text{tr}}
@@ -404,42 +405,16 @@ div.tocify {
 \newcommand{\tr}{\text{tr}}
 \newcommand{\df}{\text{df}}
 \]</span></p>
-<p>Here we discuss the <strong>Methods using derived input directions</strong>.</p>
-<p>These methods are motivated by the fact that predictors are correlated even though there are a large number of them. So, these methods try to produce a smaller number of linear combinations <span class="math inline">\(Z_m, m = 1, \cdots, M\)</span> of the input predictors <span class="math inline">\(X_j, j = 1, \cdots, P\)</span>. And use <span class="math inline">\(Z_m\)</span> in place of <span class="math inline">\(X_j\)</span> in the regression. These methods differ by how the linear combinations are constructed.</p>
-<div id="principal-components-regression" class="section level1">
-<h1><span class="header-section-number">1</span> Principal Components Regression</h1>
-<p>Here, we set <span class="math inline">\(Z_m\)</span> as the principal component of <span class="math inline">\(X\)</span> matrix, where <span class="math inline">\(z_m = X v_m\)</span>. And we typically select the first <span class="math inline">\(M\)</span> principal components. Since <span class="math inline">\(z_m\)</span> are orthogonal, we could reduce the subsequent least squares calculation as a sequence of univariate regression where <span class="math inline">\(\hat\theta_m = \langle z_m, y \rangle / \langle z_m, z_m \rangle\)</span>. And we can obtain the estimate in the original space as <span class="math inline">\(\hat\beta^\pcr = \sum_m \hat\theta_m v_m\)</span>.</p>
-<p>Note that the result is also sensitive to the scaling (PCA is sensitive to scaling), so we need to standardize the input first. And if <span class="math inline">\(M = P\)</span>, it is equivalent to least squares since we work in exactly the same input space (the column space of <span class="math inline">\(X\)</span>). <strong>As comparing to ridge regression</strong>, ridge shrinks the principal direction according to the eigenvalue whereas the PCR discards the <span class="math inline">\(P - M\)</span> smallest eigen directions instead (as shown in below). <img src="../figures/c35_pcr.png" /></p>
-</div>
-<div id="partial-least-squares" class="section level1">
-<h1><span class="header-section-number">2</span> Partial Least Squares</h1>
-<p>Here we use both <span class="math inline">\(X\)</span> and <span class="math inline">\(y\)</span> to construct the linear combination. Again, it is sensitive to scaling so we assume <span class="math inline">\(X_j\)</span> is standardized.</p>
-<p>The procedure is described below.</p>
-<ol style="list-style-type: decimal">
-<li>First we compute <span class="math inline">\(\hat\phi_{1j} = \langle x_j, y \rangle\)</span> for each <span class="math inline">\(j\)</span>.</li>
-<li>And then we calculate <span class="math inline">\(z_1 = \sum_j \hat\phi_{1j}x_j\)</span> as the first partial least squares direction.</li>
-<li>Regress out <span class="math inline">\(z_1\)</span> from <span class="math inline">\(y\)</span>.</li>
-<li>Orthogonalize <span class="math inline">\(x_1, \cdots, x_P\)</span> w.r.t. <span class="math inline">\(z_1\)</span> as well.</li>
-<li>Repeat this procedure until <span class="math inline">\(M (M \le P)\)</span> directions have been obtained.</li>
-</ol>
-<p>The algorithm is also shown in below. <img src="../figures/c35_pls.png" /></p>
-<p>For PCR, the <span class="math inline">\(m\)</span>th principal component direction <span class="math inline">\(v_m\)</span> is the solution of the following problem. <span class="math display">\[\begin{aligned}
-  &amp;\max_\alpha \var(X\alpha) \\
-  \text{subject to}~&amp; \|\alpha\| = 1, ~ \alpha&#39; S v_l = 0, ~ \forall l = 1, \cdots, m - 1
-\end{aligned}\]</span> , where <span class="math inline">\(v_l\)</span> are the first <span class="math inline">\(m-1\)</span> principal directions and <span class="math inline">\(S\)</span> is the sample covariance of <span class="math inline">\(X\)</span>. Essentially, these conditions are set to ensure that the new direction, <span class="math inline">\(X \alpha\)</span>, is orthogonal to the previous ones, <span class="math inline">\(X v_l\)</span>.</p>
-<p>Similarly, for PLS, the <span class="math inline">\(m\)</span>th direction <span class="math inline">\(\hat\phi_m\)</span> solves the following problem. <span class="math display">\[\begin{aligned}
-  &amp;\max_\alpha \corr^2(y, X\alpha) \var(X\alpha) \\
-  \text{subject to}~&amp; \|\alpha\| = 1, ~ \alpha&#39; S \hat\phi_l = 0, ~ \forall l = 1, \cdots, m - 1
-\end{aligned}\]</span> It turns out that the variance term <span class="math inline">\(\var(X\alpha)\)</span> dominates the objective, so PLS behaves similarly to PCR and ridge.</p>
-<p>And if <span class="math inline">\(X\)</span> has orthogonal columns, PLS solves least squares at the first step and the subsequent steps are unnecessary (since the <span class="math inline">\(y\)</span> residual is orthogonal to <span class="math inline">\(X\)</span> residuals).</p>
-</div>
-<div id="compare-selection-and-shrinkage-methods" class="section level1">
-<h1><span class="header-section-number">3</span> Compare “selection” and “shrinkage” methods</h1>
-<p>Here they did a comparison using some toy data with correlated <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span>. I only copy the short conclusion here.</p>
-<blockquote>
-<p>To summarize, PLS, PCR and ridge regression tend to behave similarly. Ridge regression may be preferred because it shrinks smoothly, rather than in discrete steps. Lasso falls somewhere between ridge regression and best subset regression, and enjoys some of the properties of each.</p>
-</blockquote>
-</div>
+<p>Here we discuss the situation of multiple outcome with shrinkage and selection.</p>
+<p>Note that a trivial thing to do is to run <span class="math inline">\(Y_k\)</span> separately, which means that we will have different <span class="math inline">\(\lambda_k\)</span> values for each of the outcome.</p>
+<p>But this solution may not be ideal. An extreme case is that <span class="math display">\[\begin{aligned}
+  Y_k &amp;= f(X) + \epsilon_k \\
+  Y_l &amp;= f(X) + \epsilon_l
+\end{aligned}\]</span> , where they share the same <span class="math inline">\(f(\cdot)\)</span>. In this case, we should pool the two sets of observations together to maximize the power (make the best use of the data).</p>
+<p>“Combining response” is the key of <strong>canonical correlation analysis</strong> (CCA). It is a data reduction technique for the case of having multiple <span class="math inline">\(Y_k\)</span>. The goal is to find two sequences of linearly independent <span class="math inline">\(v_m\)</span> and <span class="math inline">\(u_m\)</span> such that <span class="math inline">\(\corr^2(Yu_m, Xv_m)\)</span> is maximized. Note that CCA could be computed via generalized SVD of <span class="math inline">\(Y&#39;X/N\)</span> matrix (the matrices should be centered).</p>
+<p>Related to CCA, we can introduce the reduced rank regression in the context of multiple outcomes. The objective is the following:<span class="math display">\[\hat{B}^{rr}(m) = \arg\min_{\text{rank}(B) = m} \sum_i (Y_i - B&#39; X_i)&#39; \Sigma^{-1} (Y_i - B&#39; X_i)\]</span>. Here we assume that <span class="math inline">\(\Sigma = \cov(\epsilon)\)</span>. By replacing <span class="math inline">\(\Sigma\)</span> with <span class="math inline">\(Y&#39;Y/N\)</span>, the result is given by the CCA of <span class="math inline">\(X, Y\)</span>: <span class="math inline">\(\hat{B}^{rr}(m) = \hat{B} U_m U_m^\dagger\)</span> with <span class="math inline">\(\hat{B}\)</span> being the simple linear regression results. In other word, the reduced rank regression solution is the projection of the original solution to <span class="math inline">\(U_m\)</span> space. And <span class="math inline">\(\hat{Y}^{rr}(m) = H Y P_m\)</span> with <span class="math inline">\(P_m = U_m U_m^\dagger\)</span> and <span class="math inline">\(H\)</span> is the hat matrix of the original linear regression.</p>
+<p>Besides, even though it seems that <span class="math inline">\((Y - X \hat{B})&#39;(Y - X \hat{B}) / (N - pK)\)</span> could be a better estimator of <span class="math inline">\(\Sigma\)</span>, the solution does not change.</p>
+<p>Along this line, one could extend the reduced rank idea to a smooth version. For instance <span class="math inline">\(\hat{B}^{c + w} = \hat{B} U \Lambda U^\dagger\)</span> with <span class="math inline">\(\lambda_m = \frac{c_m^2}{c_m^2 + p/N(1 - c_m^2)}\)</span>. With this, <span class="math inline">\(\hat{Y}^{c + w} = H Y S^{c + w}, ~ S^{c + w} = U \Lambda U^\dagger\)</span>$. Also, one could further do shrinkage based on <span class="math inline">\(X\)</span> space which leads to <span class="math inline">\(\hat{Y}^{\ridge, c + w} = A_\lambda Y S^{c + w}\)</span> with <span class="math inline">\(A_\lambda = X(X&#39;X + \lambda I)^{-1} X&#39;\)</span>.</p>
 
 
 
