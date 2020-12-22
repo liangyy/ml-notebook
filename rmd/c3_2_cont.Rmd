@@ -13,6 +13,7 @@ $$
 \newcommand{\var}{\text{Var}}
 \newcommand{\rss}{\text{RSS}}
 \newcommand{\tr}{\text{tr}}
+\newcommand{\cov}{\text{Cov}}
 $$
 
 Here we discuss some important take-away's of least squares problem.
