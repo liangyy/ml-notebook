@@ -11,7 +11,7 @@
 
 
 
-<title>Chapter 3: 3.4.4</title>
+<title>Chapter 3: 3.8 - 3.9</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -382,8 +382,8 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Chapter 3: 3.4.4</h1>
-<h4 class="date">27 December, 2020</h4>
+<h1 class="title toc-ignore">Chapter 3: 3.8 - 3.9</h1>
+<h4 class="date">28 December, 2020</h4>
 
 </div>
 
@@ -396,46 +396,82 @@ div.tocify {
 \newcommand{\bias}{\text{Bias}}
 \newcommand{\var}{\text{Var}}
 \newcommand{\cov}{\text{Cov}}
+\newcommand{\corr}{\text{Corr}}
 \newcommand{\rss}{\text{RSS}}
 \newcommand{\tr}{\text{tr}}
 \newcommand{\ridge}{\text{ridge}}
-\newcommand{\lasso}{\text{lasso}}
+\newcommand{\pcr}{\text{pcr}}
 \newcommand{\ls}{\text{ls}}
 \newcommand{\tr}{\text{tr}}
 \newcommand{\df}{\text{df}}
+\newcommand{\FS}{\text{FS}}
 \]</span></p>
-<p>We discuss <strong>Least angle regression</strong> (LAR).</p>
-<div id="least-angle-regression" class="section level1">
-<h1><span class="header-section-number">1</span> Least Angle Regression</h1>
-<p>I should say that this part is completely new to me so I could miss out important aspect when taking the notes. And I’m sure that I may want to re-visit this topic whenever I need to.</p>
-<p>Similar to forward stepwise regression, at each iteration, it tries to add one more variable into the active set and update the current fit including all active variables. But LAR uses different criteria to include a variable and the update rule is also different.</p>
-<p>At first, LAR selects the variable that correlates most with the response. The fitting is not a complete fit but we carry of the coefficient of the selected variable such that the correlation between the residual and some other variables are the same as the selected one (we consider the absolute correlation). Then, we include that variable into the active set and repeat this procedure.</p>
-<p>So, at each iteration, we make sure that the angle between the residual and all variables in the active set are the same. And such angle is descreasing as the procedure goes. The solution will converge to least squares (LS) solution when all variables are included into the active set. For completeness, I copy the algorithm of LAR below. <img src="../figures/lar_algo.png" /></p>
-<p>Let go into the details within the iteration. Suppose at step <span class="math inline">\(k\)</span>, we have active set <span class="math inline">\(A_k\)</span> and we know the coefficient <span class="math inline">\(\beta_{A_k}\)</span> before the update (so that there are <span class="math inline">\(k - 1\)</span> non-zeros and one zero coefficient). We know that the the residual now is <span class="math inline">\(r_k = y - X_{A_k} \beta_{A_k}\)</span>.</p>
-<p>First, we argue that the update direction should be <span class="math inline">\(\delta_k = (X_{A_k}&#39;X_{A_k})^{-1} X_{A_k}&#39; r_k\)</span> which guaranttees that the update <span class="math inline">\(\beta_{A_k}(\alpha) = \beta_{A_k} + \alpha \cdot \delta_k\)</span> satisfy the requirement that the correlations between <span class="math inline">\(r_k(\alpha)\)</span> and <span class="math inline">\(X_{A_k}\)</span> are the same for all variables. <span class="math display">\[\begin{aligned}
-  r_k(\alpha) &amp;= r_k - \alpha X_{A_k} \delta_k \\
-  &amp;= r_k - \alpha X_{A_k} (X_{A_k}&#39;X_{A_k})^{-1} X_{A_k}&#39; r_k \\
-  X_{A_k}&#39; r_k(\alpha) &amp;= X_{A_k}&#39; r_k - \alpha X_{A_k}&#39; r_k \\
-  &amp;= (1 - \alpha) X_{A_k}&#39; r_k
-\end{aligned}\]</span> This results indicates that this update rule will shrink all correlations to residual by a factor of <span class="math inline">\(1 - \alpha\)</span>. So if they are the same before, they will be the same after the update.</p>
-<p>Also, <span class="math inline">\(u_k = X_{A_k} \delta_k\)</span> makes the smallest angle between all active predictors. And this is where “least angle” comes from.</p>
-<p>And the <span class="math inline">\(\alpha\)</span> should be determined by making sure that the maximum correlation of the updated residual and other varible matches what we have in the active set.</p>
-<p>At each iteration, a new variable got picked up and we add <span class="math inline">\(\alpha \delta\)</span> to the current coefficients. In the below we show how the residual correlations change as we go along the iterations (from left to right). <img src="../figures/lar_path.png" /> Note that we can determine the value of <span class="math inline">\(\alpha\)</span> at each iteration. To see this, we can use the relation as below. <span class="math display">\[\begin{aligned}
-  X_0&#39; r_k(\alpha) &amp;= X_0&#39; r_k - \alpha X_0&#39; X_{A_k} \delta_k
-\end{aligned}\]</span> , where <span class="math inline">\(X_0\)</span> are the variables outside active set. A naive thing could do is to go through each of the variable (see the <span class="math inline">\(p\)</span>th) in <span class="math inline">\(X_0\)</span> and calculate the <span class="math inline">\(\alpha\)</span> such that <span class="math inline">\(R_{0, k}^p - \alpha (X_0^p)&#39; u_k = (1 - \alpha) R_k\)</span>, where <span class="math inline">\(R\)</span> represents the correlation.</p>
-<p>Note that the lasso coefficient profile is quite similar to the LAR one. <img src="../figures/lar_lasso.png" /> And they differ when one coefficient passes through zero. And this leads to a modification of LAR algorithm to solve lasso path. <img src="../figures/lar_lasso_algo.png" /> The LAR algorithm is very efficient (same order of computation as least squares for <span class="math inline">\(p\)</span> predictors). And it always takes <span class="math inline">\(p\)</span> steps to reach LS solution. This algorithm above is efficient to solve lasso problem as any kind especially when <span class="math inline">\(p &gt;&gt; N\)</span>.</p>
-<p>Next, we want to talk a bit about why LAR path is similar to lasso path. First, let’s consider LAR at some iteration. <span class="math display">\[x_j&#39; (y - X\beta) = \gamma \cdot s_j~, \forall j \in A\]</span> , where <span class="math inline">\(s_j = \{1, -1\}\)</span> representing the sign of the correlation. And by construction <span class="math display">\[|x_k&#39; (y - X\beta)| \le \gamma ~,\forall k \notin A\]</span></p>
-<p>OK, then consider the lasso problem which minimizes <span class="math display">\[\frac{1}{2} \|y - X\beta\|_2^2 + \lambda \|\beta\|_1\]</span>. Let <span class="math inline">\(B\)</span> be the active set in this case. If the variable is differentiable (non-zero), then the stationary condition is (all active variable should satisfy this) <span class="math display">\[x_j&#39; (y - X\beta) = \lambda \cdot \text{sign}(\beta_j),~\forall j \in B\]</span>.</p>
-<p>So, we can see that as long as <span class="math inline">\(s_j\)</span> matches <span class="math inline">\(\text{sign}(\beta_j)\)</span>, the LAR matches the stationary condition of lasso. Note that <span class="math inline">\(s_j\)</span> won’t change the sign in LAR (its magnitude will go down at each iteration). And when this variable <span class="math inline">\(j\)</span> got initially picked up <span class="math inline">\(\beta_j\)</span> should be consistent with <span class="math inline">\(s_j\)</span>. So that when <span class="math inline">\(\beta_j\)</span> hits zero and changes the sign, it starts to violate the matched sign requirement. And that’s why we need to modify LAR algorithm to handle this situation.</p>
-<p>At the end, the performance of forward stepwise, LAR, lasso, and stagewise. <img src="../figures/lar_compare.png" /> Here we compare the performance along the fitting profile. We can see that stepwise improves quickly but it gets overfit afterwards quickly as well and its best performance is not that great. Other approaches fits more slowly but they achieve better solution.</p>
+<div id="incremental-forward-stagewise-regression" class="section level1">
+<h1><span class="header-section-number">1</span> Incremental Forward Stagewise Regression</h1>
+<p>This is similar to LAR but they are not the same. The algorithm is as follow (start with standardized features).</p>
+<ol style="list-style-type: decimal">
+<li>Start with <span class="math inline">\(\beta_k = 0\)</span> for all <span class="math inline">\(k\)</span> and residual <span class="math inline">\(r = y\)</span>.</li>
+<li>Find <span class="math inline">\(j\)</span>th feature that correlates most to <span class="math inline">\(r\)</span>.</li>
+<li>Update <span class="math inline">\(\beta_j = \beta_j + \delta_j\)</span> where <span class="math inline">\(\delta_j = \epsilon \cdot \text{sign}(\langle x_j, r \rangle)\)</span>.</li>
+<li>Update <span class="math inline">\(r = r - \delta_j \cdot x_j\)</span>.</li>
+<li>Repeat 2-4 steps until convergence (r is uncorrelated with any <span class="math inline">\(x\)</span>).</li>
+</ol>
+<p>It is a generalized version of forward stagewise regression (<span class="math inline">\(\FS_1\)</span>). We call it <span class="math inline">\(\FS_\epsilon\)</span>.</p>
+<p><img src="../figures/c38_1.png" /></p>
+<p>And <span class="math inline">\(\FS_0\)</span> is the case when <span class="math inline">\(\epsilon \rightarrow 0\)</span> (<strong>infinitesimal forward stagewise regression</strong>).</p>
+<p>LAR algorithm with <span class="math inline">\(\FS_0\)</span> modification can solve <span class="math inline">\(\FS_0\)</span> problem.</p>
+<p><img src="../figures/c38_2.png" /></p>
+<p><span class="math inline">\(\FS_0\)</span> optimizes a complex problem evolving differential. In simple word, <span class="math inline">\(\FS_0\)</span> is more constrained that the lasso so it has less variance than the lasso especially when <span class="math inline">\(p &gt;&gt; N\)</span>.</p>
 </div>
-<div id="the-degrees-of-freedom-formula-for-lar-and-lasso" class="section level1">
-<h1><span class="header-section-number">2</span> The degrees-of-Freedom formula for LAR and lasso</h1>
-<p>For a least squares problem with <span class="math inline">\(k\)</span> independent predictors, we can say that the degree of freedom is <span class="math inline">\(k\)</span>. But if we fit a bset subset selection with <span class="math inline">\(k\)</span> predictors, the degree of freedom is, in principle, greater than <span class="math inline">\(k\)</span>.</p>
-<p>Here we have a more general definition of effective degree of freedom for the adaptively fitted model. We define the following. <span class="math display">\[\begin{aligned}
-  \df(\hat{y}) &amp;= \frac{1}{\sigma^2} \sum_{i = 1}^N \cov(\hat{y}_i, y_i)
-\end{aligned}\]</span> , where the <span class="math inline">\(\cov\)</span> is the sampling covariance between the predicted and true outcome. For least squares and ridge regression where we have solution <span class="math inline">\(\hat{y} = H_\lambda y\)</span>, we can easily have the dof in closed form: <span class="math inline">\(\df(\hat{y}) = \tr(H_\lambda)\)</span>. The reason is that <span class="math display">\[\cov(y_i, \hat{y}_i) = \cov(y_i, H_{i\cdot}y_i) = H_{ii} \var(y_i)\]</span>.</p>
-<p>For the best subset selection, we need to estimate dof by simulation and no closed form could be used. But for LAR and lasso, it turns out that, after the <span class="math inline">\(k\)</span>th step of LAR procedure, <strong>the effective degrees of freedom is exactly</strong> <span class="math inline">\(k\)</span>. For the lasso (modified LAR procedure), at any stage, the dof is approximately equal to the number of predictors. And the approximation works best at the last model in the sequence that contains <span class="math inline">\(k\)</span> predictors.</p>
+<div id="piecewise-linear-path-algorithms" class="section level1">
+<h1><span class="header-section-number">2</span> Piecewise-Linear Path Algorithms</h1>
+<p>LAR uses the piecewise-linear nature of lasso solution path. Similarly, path-based algorithms can be used for other problems with piecewise-linear solution path.</p>
+<p>Suppose we want to solve <span class="math display">\[\begin{aligned}
+  \beta &amp;= \arg\min_\beta [R(\beta) + \lambda J(\beta)] \\
+  R(\beta) &amp;= sum_{i = 1}^N L(y_i, \sum_j x_{ij} \beta_j)
+\end{aligned}\]</span> , where <span class="math inline">\(R\)</span> and <span class="math inline">\(J\)</span> should be convex. The followings are sufficient conditions to ensure that the solution path is piecewise-linear.</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(R\)</span> is quadratic or piecewise-quadratic as a function of <span class="math inline">\(\beta\)</span>.</li>
+<li><span class="math inline">\(J\)</span> is piecewise linear in <span class="math inline">\(\beta\)</span>.</li>
+</ol>
+<p>In this case, the solution can be efficiently computed. Examples are:</p>
+<ul>
+<li>Squared, absolute value losses</li>
+<li>Huberized losses</li>
+<li><span class="math inline">\(L_1\)</span> and <span class="math inline">\(L_\infty\)</span> penalties on <span class="math inline">\(\beta\)</span></li>
+<li>Hinge loss in SVM (the solution pass of the dual problem is piecewise linear)</li>
+</ul>
+</div>
+<div id="the-dantzig-selector" class="section level1">
+<h1><span class="header-section-number">3</span> The Dantzig Selector</h1>
+<p>I paste the problem here without going into more details. The problem is similar to lasso but it is much less popular.</p>
+<p><img src="../figures/c38_3.png" /></p>
+</div>
+<div id="the-grouped-lasso" class="section level1">
+<h1><span class="header-section-number">4</span> The Grouped Lasso</h1>
+<p>The penalty term is</p>
+<p><span class="math display">\[\begin{aligned}
+  \lambda \sum_l \sqrt{p_l} \|\beta_l\|_2
+\end{aligned}\]</span> with <span class="math inline">\(l\)</span> indexes group and <span class="math inline">\(p_l\)</span> indicates the size of the group. This criteria encourages all coefficients belonging to a group <span class="math inline">\(l\)</span> to be zero. A generalized version is <span class="math inline">\(\|\eta\|_K = (\eta&#39; K \eta)^{\frac{1}{2}}\)</span>. Furthermore, allowing overlapping groups.</p>
+</div>
+<div id="further-propertise-of-the-lasso" class="section level1">
+<h1><span class="header-section-number">5</span> Further propertise of the lasso</h1>
+<p>Many studies have focused on the performance of the lasso with <span class="math inline">\(N\)</span> and <span class="math inline">\(p\)</span> get large. One of the assumptions are about the correlation between <span class="math inline">\(X_S\)</span> and <span class="math inline">\(X_S^c\)</span> where <span class="math inline">\(S\)</span> is the set of features with non-zero coefficients in the true model. For instance, the condition could be <span class="math display">\[
+\max_{j \in S^c} \| x_j&#39; X_S (X_S&#39; X_S)^{-1} \|_1 \le 1 - \epsilon, ~\epsilon \in (0, 1] 
+\]</span> In short, in order for the lasso to have good performance, the non-true features should not be too correlated with the true features.</p>
+<p>One of the downside of the lasso is that it shrinks the non-zero coefficient to zero which makes it inconsistent (as sample size approaches infinity, it does not converge to the true value). To solve this problem, one could use the lasso as a way of feature selection and re-fit the model using non-zeros only. In practice, this approach may be computationally demanding (to fit a large number of features simultaneously is not easy). In this case, one could use two round of CVs. In the first round CV, we do feature selection to select the related features. In the second round of CV, we use the selected features only and re-fit the hyper-parameter. The intuition is that with a small feature set to begin with, we could use a smaller penalty term which gives less severe shrinkage. (<strong>Note</strong>: The large penalty is to balance the number of features and the number of samples along with the amont of error)</p>
+<p>Furthermore, The <em>smoothly clipped absolute deviation</em> (SCAD) is proposed in place of the lasso. It shrinks less on large coefficients (see figure below).</p>
+<p><img src="../figures/c38_4.png" /> But the cost is that the penalty is not convex anymore which makes it hard to fit. Along this line, the <em>adaptive lasso</em> is proposed which is a weighted version of the lasso, <span class="math inline">\(\sum_k w_i |\beta_k|\)</span> with <span class="math inline">\(w_k = 1 / |\hat\beta_k|^{\nu}\)</span> where <span class="math inline">\(\hat\beta\)</span> is from OLS. This is an approximation of <span class="math inline">\(\|\beta\|^{1 - \nu}\)</span> penalty.</p>
+</div>
+<div id="pathwise-coordinate-optimization" class="section level1">
+<h1><span class="header-section-number">6</span> Pathwise Coordinate Optimization</h1>
+<p>This is an alternative algorithm to solve the lasso (other than the LARS) and this approach is based on simple coordinate descent. Fixing <span class="math inline">\(\lambda\)</span>, we loop over <span class="math inline">\(\beta_k\)</span> and update them one at a time. The objective at each iteration is <span class="math display">\[\sum_{i = 1}^N (y_i - \sum_{j \ne k} x_{ij} \tilde\beta_j - x_{ik} \beta_k)^2 + \lambda \sum_{j \ne k} |\beta_j| + \lambda |\beta_k|\]</span> The update rule for this objective is analytical, simply by soft-thresholding: <span class="math display">\[\tilde\beta_k \leftarrow S(y_i - \sum_{j \ne k} x_{ij} \tilde\beta_j, \lambda)\]</span> where <span class="math inline">\(S(t, \lambda) = \text{sign}(t)(|t| - \lambda)_+\)</span>.</p>
+<p>In practice, we could start with <span class="math inline">\(\lambda_\max\)</span> such that <span class="math inline">\(\tilde\beta_j = 0, ~\forall j\)</span> and we gradually decreases <span class="math inline">\(\lambda\)</span> with the previous solution as warm-start. This algorithm is faster than LARS when the problem is large. We don’t get the whole solution path but the solution on a grid of <span class="math inline">\(\lambda\)</span>’s. This algorithm can also be applied to the elastic net and the grouped lasso (in case where the penalty is the sum of functions of the individual parameters). It can also be applied to the fused lasso with substantial modification.</p>
+</div>
+<div id="computational-considerations" class="section level1">
+<h1><span class="header-section-number">7</span> Computational Considerations</h1>
+<p>The least squares is done by Cholesky decomposition of <span class="math inline">\(X&#39;X\)</span> or QR decomposition of <span class="math inline">\(X\)</span>. For <span class="math inline">\(X \in \mathbb{R}^{N \times p}\)</span>, Cholesky decomp. needs <span class="math inline">\(p^3 + Np^2 / 2\)</span> operations and QR decomp. needs <span class="math inline">\(Np^2\)</span> operations.</p>
+<p>Sometimes, Cholesky decomp. is faster but it could be less numerically stable. The lasso via LAR algorithm has the same complexity as least squares fits.</p>
 </div>
 
 

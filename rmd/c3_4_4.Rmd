@@ -64,7 +64,7 @@ $$\begin{aligned}
   X_0' r_k(\alpha) &= X_0' r_k - \alpha X_0' X_{A_k} \delta_k
 \end{aligned}$$
 , where $X_0$ are the variables outside active set.
-A naive thing could do is to go through each of the variable (see the $p$th) in $X_0$ and calculate the $\alpha$ such that $R_{0, k}^p - \alpha X_0^p' u_k = (1 - \alpha) R_k$, where $R$ represents the correlation.
+A naive thing could do is to go through each of the variable (see the $p$th) in $X_0$ and calculate the $\alpha$ such that $R_{0, k}^p - \alpha (X_0^p)' u_k = (1 - \alpha) R_k$, where $R$ represents the correlation.
 
 Note that the lasso coefficient profile is quite similar to the LAR one.
 ![](../figures/lar_lasso.png)
