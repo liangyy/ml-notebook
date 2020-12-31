@@ -22,3 +22,10 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 * 3.5 - 3.6 [note](c3_5.html): Using derived input directions.
 * 3.7 [note](c3_7.html): Multiple outcomes. 
 * 3.8 [note](c3_8.html): More algorithms on Lasso and brief on computational cost.
+
+# Chapter 4
+
+Linear models for the classification
+
+* 4.1 [note](c4_1.html): An introduction to the linear models for the classification.
+

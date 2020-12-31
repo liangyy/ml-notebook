@@ -1,0 +1,52 @@
+---
+title: "Chapter 4: 4.1"
+# author: Yanyu Liang
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+$$
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\cov}{\text{Cov}}
+\newcommand{\corr}{\text{Corr}}
+\newcommand{\rss}{\text{RSS}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\ridge}{\text{ridge}}
+\newcommand{\pcr}{\text{pcr}}
+\newcommand{\ls}{\text{ls}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\df}{\text{df}}
+\newcommand{\FS}{\text{FS}}
+$$
+Here we gives an overview of the linear models for the classification.
+
+Suppose we have a classification problem with $K$ classes. And here we have $\hat{f}_k(x) = \hat\beta_k X$ for class $k$.
+Then we can define the decision boundary between class $k$ and $l$ as $\{x: \hat{f}_k(x) = \hat{f}_l(x) \}$, which is $\{x: (\hat\beta_k - \hat\beta_l) x = 0\}$, a hyperplane (more precisely an affine set) in the input space. 
+So, we can see that the input space will be divided into $K$ regions with piece-wise linear boundaries. 
+This example is a case of the method *discriminant function*, each class $k$ has a function $\delta_k(x)$ and the classification is determined by the class with the largest $\delta(x)$ value.
+To model $\Pr(G = k| X = x)$ directly is another example of it, namely $\delta_k(x) = \Pr(G = k| X = x)$.
+It is obvious that if $\delta_k(x)$ is linear in $x$, then the decision boundary is linear.
+
+But actually, we only need that some monotone transformation of $\delta_k(x)$ is linear in $x$. And example $$\begin{aligned}
+  \delta_1(x) &= \Pr(G = 1 | X = x) = \frac{\exp(\beta'x)}{1 + \exp{\beta'x}} \\
+  \delta_0(x) &= \Pr(G = 0 | X = x) = \frac{1}{1 + \exp{\beta'x}}
+\end{aligned}$$
+We can see that the decision boundary can be determined by $\log \frac{\delta_1(x)}{\delta_0(x)} = \beta'x = 0$ which gives a hyperplane. 
+And here, in fact, we can let the monotone transformation be logit ($\log p_1 / p_0$) and we arrive at the same conclusion.
+
+Here, in this example, the decision boundary is given by letting the log-odds equal to zero, which is related to two methods, the logistic regression and the linear discriminant analysis. These two approaches differ by how to fit the model parameters using the training data.
+
+More direct approaches are to look for the hyperplane that can separate the classes (in which we want to know the direction of the hyperplane and a cut point).
+For instance, *perceptron* model is one of such approaches which try to find the separating plane if exists.
+And another approach is called *optimally separating hyperplane* which finds the "best" separating plane (if exists) or finds the plane under some measures of the overlapping classes. 
+
+Although we discuss linear models in this chapter, we could augment the input space by introducing the squared and cross-product of the input features.
+
+
+
+
+
