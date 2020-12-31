@@ -11,7 +11,7 @@
 
 
 
-<title>ESL reading notes</title>
+<title>Chapter 4: 4.2</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -382,44 +382,62 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">ESL reading notes</h1>
+<h1 class="title toc-ignore">Chapter 4: 4.2</h1>
 <h4 class="date">30 December, 2020</h4>
 
 </div>
 
 
-<div id="chapter-2" class="section level1">
-<h1><span class="header-section-number">1</span> Chapter 2</h1>
-<ul>
-<li>2.1 - 2.5 <a href="c2_21_25.html">note</a></li>
-<li>2.6 <a href="c2_6.html">note</a></li>
-<li>2.7 <a href="c2_7.html">note</a>: Very insightful overview on why we want to have structured regression models.</li>
-<li>2.8 <a href="c2_8.html">note</a>: Overview of restricted estimators.</li>
-<li>2.9 <a href="c2_9.html">note</a>: Model selection and the Bias-Variance tradeoff.</li>
-</ul>
-</div>
-<div id="chapter-3" class="section level1">
-<h1><span class="header-section-number">2</span> Chapter 3</h1>
-<ul>
-<li>3.1 - 3.2.2 <a href="c3_1_.html">note</a>: Introduction to least squares.</li>
-<li>3.2.3 - 3.2.4 <a href="c3_2_cont.html">note</a>: Least squares with multiple <span class="math inline">\(X\)</span> or <span class="math inline">\(Y\)</span>.</li>
-<li>3.3 <a href="c3_3.html">note</a>: Subset selection.</li>
-<li>3.4.1 <a href="c3_4.html">note</a>: Ridge regression.</li>
-<li>3.4.2 - 3.4.3 <a href="c3_4_2.html">note</a>: Lasso and the geometric view.</li>
-<li>3.4.4 <a href="c3_4_4.html">note</a>: Least angle regression.</li>
-<li>3.5 - 3.6 <a href="c3_5.html">note</a>: Using derived input directions.</li>
-<li>3.7 <a href="c3_7.html">note</a>: Multiple outcomes.</li>
-<li>3.8 <a href="c3_8.html">note</a>: More algorithms on Lasso and brief on computational cost.</li>
-</ul>
-</div>
-<div id="chapter-4" class="section level1">
-<h1><span class="header-section-number">3</span> Chapter 4</h1>
-<p>Linear models for the classification</p>
-<ul>
-<li>4.1 <a href="c4_1.html">note</a>: An introduction to the linear models for the classification.</li>
-<li>4.2 <a href="c4_2.html">note</a>: Linear regression on an indicator matrix.</li>
-</ul>
-</div>
+<p><span class="math display">\[
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\cov}{\text{Cov}}
+\newcommand{\corr}{\text{Corr}}
+\newcommand{\rss}{\text{RSS}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\ridge}{\text{ridge}}
+\newcommand{\pcr}{\text{pcr}}
+\newcommand{\ls}{\text{ls}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\df}{\text{df}}
+\newcommand{\FS}{\text{FS}}
+\newcommand{\wt}{\widetilde}
+\]</span> <strong>Linear regression on an indicator matrix</strong></p>
+<p>Here we consider a <span class="math inline">\(K\)</span>-class problem and we encode the outcome (class) as one-hot vector. So, we have <span class="math inline">\(Y \in \mathbb{R}^{N \times K}\)</span> matrix as the observed outcome. And here we fit the linear regression estimator: <span class="math inline">\(\hat{B} = (X&#39;X)^{-1} X&#39;Y\)</span>. And <span class="math inline">\(\hat{G}(x) = \arg\max_{g} \hat{f}_g(x)\)</span> with <span class="math inline">\(\hat{f}_g(x) = \hat{B}_{\cdot g}&#39; x\)</span>.</p>
+<p>One way to think about <span class="math inline">\(\hat{f}_g(x)\)</span> is to treat it as an approximation of <span class="math inline">\(\E(Y_g | X = x) = \Pr(G = g | X = x)\)</span>. But the question is how good is the approximation.</p>
+<p>Note that when we include intercept in the model, <span class="math inline">\(\sum_g \hat{f}_g(x) = 1, ~\forall x\)</span>. See the code verification in below. And we can also verify it by considering <span class="math inline">\(\hat{f}_g(x) = x&#39; (\wt{X}&#39;\wt{X})&#39; \wt{X}&#39;\wt{Y}_g + \bar{Y}_g\)</span> where <span class="math inline">\(\wt\cdot\)</span> is the column-wise centered matrix and <span class="math inline">\(\bar{Y}_g\)</span> is the mean of <span class="math inline">\(Y_g\)</span>. The key property is that <span class="math inline">\(\sum_g \wt{Y}_g = 0\)</span>.</p>
+<pre class="r"><code>set.seed(2020)
+K = 5
+N = 100
+P = 50
+X = matrix(rnorm(N * P), ncol = P)
+Y = matrix(0, ncol = K, nrow = N)
+for(i in 1 : N) {
+  k = sample(K, size = 1)
+  Y[i, k] = 1 
+}
+
+X_ = cbind(rep(1, N), X)
+Bhat = solve((t(X_) %*% X_), t(X_) %*% Y)
+nt = 13
+x = matrix(rnorm(nt * P), ncol = P)
+x_ = cbind(rep(1, nt), x)
+yhat = x_ %*% Bhat 
+# yhat
+rowSums(yhat)</code></pre>
+<pre><code>##  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1</code></pre>
+<p>But, we cannot ensure that <span class="math inline">\(\hat{f}_g(x) &gt; 0\)</span>. Even with this drawback, this approach can yield similar results as compared to the more standard approach. And if we allow linear regression onto the basis expansions <span class="math inline">\(h(X)\)</span> of the input, it can give consistent result as sample size gets big.</p>
+<p>Another view is to think that we try to find $_g(x) = x’_g $ such that we can minimize <span class="math inline">\(\| Y_i - (f_1(X_i), \cdots, f_K(X_i))&#39;\|_2^2\)</span>. We can see that it is a special case in Euclidean space. This view only works when the classes are decoupled.</p>
+<p>There is a problem of this approach when there are more than 2 classes, <em>i.e.</em> some classes could be masked by others (see figure below).</p>
+<p><img src="../figures/c42_1.png" /></p>
+<p>The direct issue is that we cannot build a good linear model for “class 2” (when letting class-2 points be labeled as 1 and others have 0 as the label). And to augment the feature space with quadratic terms could largely solve this problem.</p>
+<p><img src="../figures/c42_2.png" /></p>
+<p>For the cases of more than three classes, we may need a higher degree of augmentation. A loose rule is that for <span class="math inline">\(K\)</span> classes, we need <span class="math inline">\(K - 1\)</span> degree of augmentation, which means that we need to deal with <span class="math inline">\(O(p^{K - 1})\)</span> terms.</p>
+<p>And note that the masking problem is prevalent for large <span class="math inline">\(K\)</span> and small <span class="math inline">\(p\)</span>!</p>
 
 
 
