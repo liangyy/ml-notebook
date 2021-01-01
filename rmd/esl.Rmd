@@ -29,6 +29,6 @@ Linear models for the classification
 
 * 4.1 [note](c4_1.html): An introduction to the linear models for the classification.
 * 4.2 [note](c4_2.html): Linear regression on an indicator matrix.
-
+* 4.3 [note](c4_3.html): Linear discriminant analysis
 
 

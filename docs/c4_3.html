@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Chapter 4: 4.3</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Machine Learning Notebook</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="esl.html">ESL reading</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/liangyy/ml-notebook">
+    <span class="fas fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Chapter 4: 4.3</h1>
+<h4 class="date">01 January, 2021</h4>
+
+</div>
+
+
+<p><span class="math display">\[
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\cov}{\text{Cov}}
+\newcommand{\corr}{\text{Corr}}
+\newcommand{\rss}{\text{RSS}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\ridge}{\text{ridge}}
+\newcommand{\pcr}{\text{pcr}}
+\newcommand{\ls}{\text{ls}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\df}{\text{df}}
+\newcommand{\FS}{\text{FS}}
+\newcommand{\wt}{\widetilde}
+\]</span> <strong>Linear discriminant analysis</strong></p>
+<div id="overview" class="section level1">
+<h1><span class="header-section-number">1</span> Overview</h1>
+<p>From the decision theory, the key quantity for a classifier is <span class="math inline">\(\Pr(G | X)\)</span>. Suppose <span class="math inline">\(f_k(x) = \Pr(X = x | G = k)\)</span>, then we can easily derive <span class="math inline">\(\Pr(G | X)\)</span> by Bayes rule along with prior <span class="math inline">\(\Pr(G = k) = \pi_k\)</span>. So, the key function of interest is <span class="math inline">\(f_k(x)\)</span>. The linear discriminant analysis assumes Gaussian for <span class="math inline">\(f_k(x)\)</span>. And there are methods using either non-parametric approach or extra assumptions (<em>e.g.</em> Naive Bayes) to estimate <span class="math inline">\(\Pr(X = x | G = k)\)</span>.</p>
+<p>For LDA, we assume <span class="math inline">\(f_k(x) = \frac{1}{2\pi^{p / 2}|\Sigma_k|^{1 / 2}} e^{-\frac{1}{2} (x - \mu_k)&#39; \Sigma_k^{-1} (x - \mu_k)}\)</span> with extra assumption that <span class="math inline">\(\Sigma_k = \Sigma, ~ \forall k\)</span>. So, the decision boundary could be derived from <span class="math display">\[\begin{aligned}
+  \log \frac{\Pr(G = k | X = x)}{\Pr(G = l | X = x)} &amp;= \log \frac{f_k(x)}{f_l(x)} + \log \frac{\pi_k}{\pi_l} \\
+  &amp;= \log \frac{\pi_k}{\pi_l} + x&#39; \Sigma (\mu_k - \mu_l) - \frac{1}{2} (\mu_k + \mu_l)&#39; \Sigma^{-1} (\mu_k - \mu_l)
+\end{aligned}\]</span> Note that the simplification comes from the fact that <span class="math inline">\(\Sigma\)</span> is the same across all classes. So, here we can conclude that the decision boundary is piece-wise linear. This property only holds when <span class="math inline">\(\Sigma\)</span> is common.</p>
+<p>And we can define <span class="math inline">\(\delta_k(x) = \log \pi_k + x&#39; \Sigma^{-1} \mu_k - \frac{1}{2} \mu_k&#39; \Sigma^{-1} \mu_k\)</span> and the best class is <span class="math inline">\(G(x) = \arg\max_k \delta_k(x)\)</span>. In practice, we need to estimate <span class="math inline">\(\pi_k\)</span>, <span class="math inline">\(\mu_k\)</span>, and <span class="math inline">\(\Sigma\)</span>.</p>
+<ul>
+<li><span class="math inline">\(\hat\pi_k = N_k / N\)</span></li>
+<li><span class="math inline">\(\hat\mu_k = \sum_{i: g_i = k} x_i / N_k\)</span></li>
+<li><span class="math inline">\(\hat\Sigma = \sum_k \sum_{i: g_i = k} (x_i - \hat\mu_k) (x_i - \hat\mu_k)&#39; / (N - K)\)</span></li>
+</ul>
+<p>For binary classification with balanced data set (<span class="math inline">\(N_1 = N_2\)</span>), LDA is equivalent to the linear regression on indicator matrix. But for unbalanced data set, they have different intercepts. This result implies an approximate way to fit LDA in binary classification, namely to fit the linear regression on indicator matrix first and then re-fit the intercept to minimize the training error. And for multi-class problems, LDA does not have the issue of masking.</p>
+<p>For a general discriminant problem, <span class="math inline">\(\Sigma_k \ne \Sigma_l\)</span>, we have quadratic decision boundary instead, which we call QDA. In practice, we have another way to fit quadratic boundaries which is to enlarge the feature space by quadratic terms. This approach can yield similar result as QDA but they are distinct approaches.</p>
+<p><img src="../figures/c43_1.png" /></p>
+<p>LDA and QDA are widely used and perform really well. And they should always be included as simple tools to compare against. The reason why these approaches work better than many other more complicated methods is usually not that the Gaussian assumption is correct or the equal covariance assumption is correct. The reason could be more about that the sample size can only afford simple models like these (with linear or quadratic boundaries) and these estimators are stable. This is about bias-variance tradeoff. Simple models have higher bias but we have lower variance to estimate the model parameters.</p>
+</div>
+<div id="regularized-discriminant-analysis" class="section level1">
+<h1><span class="header-section-number">2</span> Regularized discriminant analysis</h1>
+<p>It makes compromise between LDA and QDA by regularizing <span class="math inline">\(\Sigma_k\)</span>. Here we let <span class="math inline">\(\hat\Sigma(\alpha) = \alpha \hat\Sigma_k + (1 - \alpha) \hat\Sigma\)</span>. <span class="math inline">\(\alpha\)</span> can be determined by cross-validation. Moreover, one can regularize <span class="math inline">\(\hat\Sigma\)</span> further, namely <span class="math inline">\(\hat\Sigma(\gamma) = \gamma \hat\Sigma + (1 - \gamma) \hat\sigma^2 I\)</span>. So that the RDA can be written as <span class="math inline">\(\hat\Sigma(\alpha, \gamma)\)</span>.</p>
+</div>
+<div id="computations-for-lda" class="section level1">
+<h1><span class="header-section-number">3</span> Computations for LDA</h1>
+<p>The key quantity is <span class="math inline">\(\hat\Sigma_k^{-1}\)</span> and we can compute it via the EVD. So the procedure is:</p>
+<ul>
+<li>Center the data <span class="math inline">\(X\)</span> and compute <span class="math inline">\(\hat\Sigma\)</span>.</li>
+<li>Compute <span class="math inline">\(\hat\Sigma = U D U&#39;\)</span> and let <span class="math inline">\(X^* = D^{1/2} U&#39; X\)</span>.</li>
+</ul>
+</div>
+<div id="reduced-rank-lda" class="section level1">
+<h1><span class="header-section-number">4</span> Reduced-rank LDA</h1>
+<p>Suppose the input space is <span class="math inline">\(p\)</span>-dimensional and we have <span class="math inline">\(K\)</span> classes, we can think of the <span class="math inline">\(K\)</span> classes live in a <span class="math inline">\((K - 1)\)</span> subspace which is determined by the <span class="math inline">\(K\)</span> centroids (two points determine a line and three points determine a plane, etc). The orthogonal space won’t contribute to the classification since it affects all classes the same.</p>
+<p>So, with this reasoning, we should project <span class="math inline">\(X^*\)</span> onto the subspace <span class="math inline">\(H_{K - 1}\)</span> and only consider the distance to the centroid in that space. For instance, for <span class="math inline">\(K = 3\)</span>, naturally we can plot it in the <span class="math inline">\(H_2\)</span> space determined by the three centroids.</p>
+<p>And generally speaking, we may want to ask for <span class="math inline">\(H_L \subseteq H_{K - 1}\)</span> with <span class="math inline">\(L \le K - 1\)</span> which is optimal for LDA in some sense. Fisher defines the “optimal” to mean that the centroids spread most in the space (in terms of the variance). This criteria corresponds to finding the principle component subspace of the centroids. We have an example on real data in below which also includes 2-dimensional subspace proposed by other methods.</p>
+<p><img src="../figures/c43_2.png" /></p>
+<p>In summary, the procedure to perform reduced-rank LDA is:</p>
+<ul>
+<li>Compute <span class="math inline">\(K \times p\)</span> matrix of the centroids, <span class="math inline">\(M\)</span>, and the common covariance matrix <span class="math inline">\(W\)</span>.</li>
+<li>Compute <span class="math inline">\(M^* = M W^{-1/2}\)</span> via the EVD of <span class="math inline">\(W\)</span>.</li>
+<li>Compute <span class="math inline">\(B^*\)</span> as the covariance matrix of <span class="math inline">\(M^*\)</span> and the EVD of <span class="math inline">\(B^* = V^* D_B (V^*)&#39;\)</span>.</li>
+</ul>
+<p>The <span class="math inline">\(l\)</span>th discriminant variable is <span class="math inline">\(Z_l = v_l&#39; X\)</span> with <span class="math inline">\(v_l = W^{-1/2} v_l^*\)</span>.</p>
+<p>But Fisher arrived at this approach via another route. The problem he posted is</p>
+<blockquote>
+<p>Find the linear combination <span class="math inline">\(Z = a&#39;X\)</span> such that the between-class variance is maximized relative to the within-class variance.</p>
+</blockquote>
+<p>The plot below illustrates why this criteria makes sense.</p>
+<p><img src="../figures/c43_3.png" /></p>
+<p>Note that the between-class variance of <span class="math inline">\(Z\)</span> is <span class="math inline">\(a&#39; B a\)</span> and the within-class variance is <span class="math inline">\(a&#39; W a\)</span> (where <span class="math inline">\(B\)</span> is the covariance of the centroid matrix). And <span class="math inline">\(B + W = T\)</span> where <span class="math inline">\(T\)</span> is the total variance of the data ignoring the class information. (Remember that <span class="math inline">\(T\)</span> is different from <span class="math inline">\(W\)</span> since when we compute <span class="math inline">\(W\)</span>, we need to relative to the class centroid of the point).</p>
+<p>With this, Fisher’s problem is to maximize the Rayleigh quotient. <span class="math display">\[\max_a \frac{a&#39; B a}{a&#39; W a}\]</span> Or equivalently, <span class="math display">\[\max_a a&#39;Ba\]</span> subject to <span class="math inline">\(a&#39;Wa = 1\)</span>. The solution to this problem is that <span class="math inline">\(a\)</span> is the largest eigenvector of <span class="math inline">\(W^{-1}B\)</span> which is identical to <span class="math inline">\(v_1\)</span>. And similarly, we have <span class="math inline">\(a_l = v_l\)</span> where <span class="math inline">\(a_l\)</span> is defined as the direction that maximizes <span class="math inline">\(a&#39;Ba / a&#39;Wa\)</span> and orthogonal to the previous <span class="math inline">\(a_1, \cdots, a_{l-1}\)</span> directions. We refer <span class="math inline">\(a_l\)</span> to discriminant coordinates or canonical variates (since another derivation relies on the canonical correlation analysis of Y, indicator response matrix, and <span class="math inline">\(X\)</span>.</p>
+<p>To summarize, we have the following results so far.</p>
+<ul>
+<li>Gaussian classification with common covariance leads to linear decision boundaries. And we can think of it as sphering the data with respect to <span class="math inline">\(W\)</span> (the covariance) and then classify the point according to the closest centroid.</li>
+<li>Since only the relative distance to the centroids matter in the classification, one can consider only the subspace spanned by the centroids.</li>
+<li>This subspace can be further reduced by only keeping the optimal ones. And the resulting procedure is equivalent to the procedure due to Fisher.</li>
+</ul>
+<p>Note that the reduced-rank LDA is not only a dimension reduction tool but also applicable for a classification problem. Here, the rationale is that we can further assume that the centroids live in a <span class="math inline">\(L\)</span> dimensional subspace.</p>
+<p>Speaking of <span class="math inline">\(\log\pi_k\)</span>, it does not show up in determining the direction of the boundaries but it does matter when deciding the cut-point of the boundary. Intuitively, if <span class="math inline">\(\pi_k = \pi_l\)</span>, we will set the cut-point right in the middle of the two centroids. Otherwise, we need to move the cut-point to the centroid that has smaller <span class="math inline">\(\pi\)</span> to improve the error rate. An example on real data is shown.</p>
+<p><img src="../figures/c43_4.png" /></p>
+<p>There is a close connection between the reduced-rank LDA and the linear regression on the indicator outcome matrix. LDA is equivalent to the regression followed by EVD of <span class="math inline">\(\hat{Y}&#39;Y\)</span>. And LDA on <span class="math inline">\(\hat{Y}\)</span> is equivalent to LDA on the original space.</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
