@@ -1,0 +1,115 @@
+---
+title: "Chapter 4: 4.4"
+# author: Yanyu Liang
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+$$
+\newcommand{\epe}{\text{EPE}}
+\newcommand{\E}{\text{E}}
+\newcommand{\mse}{\text{MSE}}
+\newcommand{\tdata}{\mathcal{T}}
+\newcommand{\bias}{\text{Bias}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\cov}{\text{Cov}}
+\newcommand{\corr}{\text{Corr}}
+\newcommand{\rss}{\text{RSS}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\ridge}{\text{ridge}}
+\newcommand{\pcr}{\text{pcr}}
+\newcommand{\ls}{\text{ls}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\df}{\text{df}}
+\newcommand{\FS}{\text{FS}}
+\newcommand{\wt}{\widetilde}
+$$
+**Logistic regression**
+
+# Overview 
+
+The definition is $$\log \frac{\Pr(G = k | X = x)}{\Pr(G = K | X = x)} = \beta_{k}' x, ~\forall k \in \{1, \cdots, K - 1\}$$
+Note that different choices of $K$ give equivalent results. And the model ensures that $\sum_{k = 1}^K \Pr(G = k | X = x) = 1$.
+
+Let use $p_k(x; \theta)$ to represent $\Pr(G = k | X = x)$.
+
+# Fitting the logistic regression
+
+The log-likelihood is $$l(\theta) = \sum_{i = 1}^N p_{g_i}(x_i; \theta)$$.
+In the case of binary classification ($K = 2$), the equation is relatively simple. 
+For $K = 2$, the score function is:
+$$\begin{aligned}
+  \frac{\partial l(\beta)}{\partial \beta} &= \sum_i x_i(y_i - p(x_i; \beta))
+\end{aligned}$$
+By setting the derivative to zero, we have $p+1$ nonlinear equations. Note that we include intercept implicitly.
+
+To solve for the score function equal to zero, we can use Newton-Raphson which also needs the Hessian. 
+$$\begin{aligned}
+  \frac{\partial^2 l(\beta)}{\partial \beta partial \beta'} &= -\sum_i x_i x_i' p(x_i; \beta)(1 - p(x_i; \beta))
+\end{aligned}$$
+From here we can derive the update rule:
+$$\begin{aligned}
+  \beta^{\text{new}} &= (X' W X)^{-1} X' W z \\
+  z &= X\beta^{\text{old}} + W^{-1} (y - p) \\
+  W &= p(x; \beta^{\text{old}}) (1 - p(x; \beta^{\text{old}}))
+\end{aligned}$$
+This algorithm is called iteratively reweighted least squares (IRLS). 
+Usually, $\beta = 0$ is a good initial point but it does not guarantee to converge.
+For multi-class models, the IRLS algorithm is still applicable but the derivation is more complicated.
+
+Alternatively, we can also use coordinate descent to solve the logistic model. The `glmnet` package can fit large problem (both in $p$ and $N$).
+In practice, logistic models can be used to explore the relation between the outcome variable and the input features.
+
+# An example
+
+Here we fit the logistic model with multiple variables to study the risk factor of myocardial infarctions. 
+We used Wald test statistic to determine if a variable is significant contributing to the outcome risk. 
+Note that with multiple correlated variables, we should interpret the sign of the slope with cautious.
+
+# Quadratic approximations and inference
+
+It's been pointed out that the mle of the logistic model $\hat\beta$ is also the weighted least squares coefficients of the responce $z_i = x_i' \hat\beta + \frac{y_i - \hat{p}_i}{\hat{p}_i ( 1 - \hat{p}_i )}$ with weight $w_i = \hat{p}_i ( 1 - \hat{p}_i )$. 
+
+Related to the above relation, there are some useful results:
+
+* The weighted RSS is the familiar Pearson chi-squares statistic $\sum_i \frac{(y_i - \hat{p}_i)^2}{\hat{p}_i(1 - \hat{p}_i)}$.
+* Asymptotic likelihood theory, if the model is correct, $\hat\beta$ is consistent.
+* By CLT, the distribution of $\hat\beta$ converges to $N(\beta, (X' W X)^{-1})$.
+* The model fitting is time-consuming. Popular shortcuts are the Rao score test and the Wald test which include or exclude a variable from the current model which are both only based on the current mle fit. So, they are computationally efficient. Some software implementations have taken advantage of these such as `glm` in R.
+
+# $L_1$ regularized logistic regression
+
+Similar to the linear model, we can add the lasso penalty to the model $\lambda \sum_j |\beta_j|$. The problem is still convex and we can use non-linear programming methods to solve it. 
+Alternative, we can use the quadratic approximations as shown in the logistic regression with Newton's method. 
+Here, we can fit the weighted least squares with the lasso penalty instead. 
+Interestingly, the score equation for the non-zero $\beta_j$ is $x_j' (y - p) = \lambda \cdot \text{sign}(\beta_j)$
+The path based algorithms (by LAR) are still applicable but it is more difficult than the linear model since the path is not linear anymore (*e.g.* `glmpath` in R using predictor-corrector methods).
+The coordinate descent methods are also applicable, *e.g.* `glmnet` which is very efficient and affordable for large problem (large in $N$ or $p$).
+
+# logistic regression or LDA?
+
+Under the assumption of Gaussian model and common covariance, the logistic regression and the LDA method have the same expression for $\log \frac{\Pr(G = k | X = x)}{\Pr(G = K | X = x)}$ which is a linear function in $x$. 
+But they differ by how to estimate the model parameters.
+
+For the logistic model, we can think of it as looking for parameters to optimize $\Pr(X = x) \Pr(G = k | X = x)$ where we have explicit expression for the second term (the conditional probability) and implicitly we assign the same weight to each of $X = x$ in the training data. 
+So, we essentially fit $\Pr(X = x)$ non-parametrically.
+
+For LDA, we fit the model parameters by maximizing $Pr(G = k, X = x) = \phi(X = x; \mu_k, \Sigma_k)\pi_k = \Pr(X = x | G = k) \pi_k$ where $\phi(\cdot)$ is the Gaussian density. 
+So, here $\Pr(X = x) = \sum_k \phi(X = x; \mu_k, \Sigma_k) \pi_k$ and we fit this distribution explicitly.
+
+From these results it seems that the logistic model makes fewer assumptions that the LDA.
+With this extra assumption, we have more information to be used to estimate model parameters (which means lower variance).
+So, $f_k(x)$ is indeed Gaussian, the LDA is more efficient than the logistic model by 30% (LDA does as well as the logistic when the latter has 30% more data).
+
+In practice, on one hand, the common covariance means that even the points very far from the decision boundaries will contribute to the estimation of covariance and so does the outliers. 
+But on the other hand, in the LDA model, we can also utilize the unlabelled points in estimating $\Pr(X = x)$.
+
+In fact, we could think of the additional assumptions on the marginal distribution as a regularization. 
+For instance, for perfectly separable data, the logistic model (the mle) is not well-defined (we have infinite number of solutions) but the LDA is well-defined in this case.
+
+In practice, with many qualitative variables, the Gaussian assumption is less likely to be true and people will prefer the logistic model as a safer choice. 
+But in fact, the logistic model and the LDA have very similar performance even on qualitative features.
+
+
+
+
+
